@@ -16,7 +16,7 @@ class InitPage extends Component {
   }
   componentDidMount (){
     this.props.TestActions();
-  }
+  }//test commit
   static getDerivedStateFromProps(nextProps, prevState){
     const {state, isLoading, data} = nextProps.TestReducer;
     if(isLoading !== prevState.isLoading) {
