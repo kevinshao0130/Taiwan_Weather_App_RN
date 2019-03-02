@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Text, View, TouchableOpacity} from 'react-native';
+import {Text, View, TouchableOpacity, Image} from 'react-native';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import styles from './styles';
@@ -15,9 +15,9 @@ class InitPage extends Component {
     };
   }
   componentDidMount (){
-    this.props.TestActions();
-  }// test commit 2
-  static getDerivedStateFromProps(nextProps, prevState){
+    // this.props.TestActions();
+  }
+  /*static getDerivedStateFromProps(nextProps, prevState){
     const {state, isLoading, data} = nextProps.TestReducer;
     if(isLoading !== prevState.isLoading) {
       if(state === ActionTypes.TEST_ACTION_SUCCESS) {
@@ -37,20 +37,45 @@ class InitPage extends Component {
         isLoading: false
       };
     }
- }
+ }*/
   render() {
-    const { data } = this.props.TestReducer;
+    //const { data } = this.props.TestReducer;
     const { text } = this.state;
     return (
       <View style={styles.container}>
-        <Text style={styles.welcome}>{text}</Text>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() =>
-            console.log(data)
-          }
-        >
-        </TouchableOpacity>
+        <View style={styles.locView1}>
+          <View style={styles.topView}>
+            <Image
+              style={styles.imaloc}
+              source={require('../../image/ic_location.png')}
+            />
+            <View style={styles.locTxtView}>
+              <Text style={styles.txt2}>桃園市桃園區</Text>
+            </View>
+            <View style={styles.clockTxtView1}>
+              <View style={styles.clockTxtView2}>
+                <Image
+                  style={styles.imaclock}
+                  source={require('../../image/ic_clock.png')}
+                />
+                <Text style={styles.txt2}>2019/3/2 Sat</Text>
+              </View>
+            </View>
+          </View>
+        </View>
+        <View style={styles.topView}>
+          <View style={styles.topLeftView}>
+            <View style={styles.imaView}>
+              <Image
+                source={require('../../image/ic_cloud_sun.png')}
+              />
+            </View>
+            <View style={styles.txtView1}>
+              <Text style={styles.txt1}>多雲時晴</Text>
+            </View>
+          </View>
+          <View style={styles.topRightView} />
+        </View>
       </View>
     );
   }
