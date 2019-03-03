@@ -58,29 +58,41 @@ class InitPage extends Component {
                   style={styles.imaclock}
                   source={require('../../image/ic_clock.png')}
                 />
-                <Text style={styles.txt2}>2019/3/2 Sat</Text>
+                <Text style={[styles.txt2, { marginTop: 7 }]}>2019/3/2 SAT</Text>
               </View>
             </View>
           </View>
         </View>
-        <View style={styles.topView}>
-          <View style={styles.topLeftView}>
-            <View style={styles.imaView}>
-              <Image
-                source={require('../../image/ic_cloud_sun.png')}
-              />
+        <View style={styles.cardView}>
+          <View style={styles.topView}>
+            <View style={styles.topLeftView}>
+              <View style={styles.imaView}>
+                <Image
+                  style={styles.mainIma}
+                  source={require('../../image/ic_cloud_rain_moon.png')}
+                />
+              </View>
+              <View style={styles.txtView1}>
+                <Text style={styles.txt1}>多雲時晴</Text>
+                <Text style={styles.txt3}>稍有寒意至舒適</Text>
+              </View>
             </View>
-            <View style={styles.txtView1}>
-              <Text style={styles.txt1}>多雲時晴</Text>
-            </View>
+            <View style={styles.lineView1} />
+              <View style={styles.topRightView}>
+                <Text style={styles.txt4}>體感溫度</Text>
+                <View style={styles.align_items_center}>
+                  <Text style={styles.txt5}>20°c</Text>
+                  <View style={styles.txtView2}>
+                    <Text style={styles.txt6}>18°c~22°c</Text>
+                  </View>
+                </View>
+              </View>
           </View>
-          <View style={styles.topRightView} />
         </View>
       </View>
     );
   }
 }
-
 function mapStateToProps(state) {
   return {
     TestReducer: state.TestReducer

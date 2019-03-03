@@ -3,41 +3,38 @@ import {StyleSheet, Dimensions} from 'react-native';
 module.exports = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: '#FFF',
+      backgroundColor: '#2C3E50',
     },
     locView1: {
       height: 30,
-      backgroundColor: '#FFF',
     },
     topView: {
       flex: 1,
       flexDirection: 'row',
     },
     topLeftView: {
-      flex: 4,
-      height: 250,
+      flex: 1,
       alignItems: 'center',
+    },
+    topRightView: {
+      flex: 1,
+      marginTop: 20,
     },
     imaView: {
       flex: 1,
-      marginTop: 50
+      marginTop: 25,
     },
     imaloc: {
-      marginLeft: 15,
-      height: 22,
-      width: 22,
-      marginTop: 3
+      marginLeft: 18,
+      height: 16,
+      width: 16,
+      marginTop: 7
     },
     imaclock: {
       marginRight: 5,
-      marginTop: 3,
-      height: 24,
-      width: 25 
-    },
-    topRightView: {
-      flex: 3,
-      height: 250,
-      backgroundColor: 'red',
+      marginTop: 6,
+      height: 17,
+      width: 18 
     },
     locTxtView: {
       marginLeft: 5,
@@ -46,8 +43,7 @@ module.exports = StyleSheet.create({
     clockTxtView1: {
       flex: 1,
       alignItems: 'flex-end',
-      width: 11,
-      marginRight: 15 
+      marginRight: 18 
     },
     clockTxtView2: {
       flexDirection: 'row',
@@ -56,14 +52,58 @@ module.exports = StyleSheet.create({
     txtView1: {
       flex: 1,
       alignItems: 'center',
-      justifyContent: 'center',
+      marginTop: 35,
+    },
+    txtView2: {
+      borderWidth: 1,
+      borderRadius: 5,
+      borderColor: '#FFF',
+      height: 37,
+      paddingHorizontal: 10,
+      marginTop: 17 
     },
     txt1: {
-      fontSize: 20,
-      color: '#000'
+      fontSize: 25,
+      color: '#FFF'
     },
     txt2: {
+      fontSize: 13,
+      color: '#FFF'
+    },
+    txt3: {
       fontSize: 15,
-      color: '#000'
-    }
+      color: '#FFF',
+      marginTop: 2
+    },
+    txt4: {
+      fontSize: 15,
+      color: '#FFF',
+      marginLeft: 25
+    },
+    txt5: {
+      fontSize: 70,
+      color: '#FFF'
+    },
+    txt6: {
+      fontSize: 25,
+      color: '#FFF'
+    },
+    cardView: {
+      marginHorizontal: 15,
+      borderRadius: 10,
+      backgroundColor: '#48627c',
+      height: 210 
+    },
+    mainIma: {
+      height: 100,
+      width: 100
+    },
+    lineView1: {
+      backgroundColor: '#FFF',
+      width: 2,
+      marginVertical: 18
+    },
+    align_items_center: {
+      alignItems: 'center'
+    },
   });
