@@ -52,7 +52,7 @@ module.exports = StyleSheet.create({
     txtView1: {
       flex: 1,
       alignItems: 'center',
-      marginTop: 35,
+      marginTop: 20,
     },
     txtView2: {
       borderWidth: 1,
@@ -95,8 +95,8 @@ module.exports = StyleSheet.create({
       height: 210 
     },
     mainIma: {
-      height: 100,
-      width: 100
+      height: 90,
+      width: 90
     },
     lineView1: {
       backgroundColor: '#FFF',
