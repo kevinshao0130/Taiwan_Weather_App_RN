@@ -13,6 +13,7 @@ export function TestActions(url) {
 }
 
 function getToDos() {
+  console.log(ActionTypes.TEST_ACTION_REQUEST);
   return {
       type: ActionTypes.TEST_ACTION_REQUEST
   }

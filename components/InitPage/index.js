@@ -7,18 +7,39 @@ import styles from './styles';
 import { TestActions } from '../../fetch/TestAction';
 import { ActionTypes } from '../../constants/Actions';
 
+const days = {
+  '1': 'MON',
+  '2': 'TUE',
+  '3': 'WED',
+  '4': 'THU',
+  '5': 'FRI',
+  '6': 'SAT',
+  '7': 'SUN',
+};
+
 class InitPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
       data: '',
+      minT: '',
+      maxT: '',
+      AT: '',
+      pop: '',
+      wx: '',
+      rh: '',
+      wxImage: require('../../image/ic_cloud.png'),
+      currentDate: moment(new Date()).format("YYYY/MM/DD"),
+      currentDay: days[new Date().getDay()],
       isLoading: false,
     };
+    this.currentGreetingTime = moment(new Date()).format("HH") > 17 || moment(new Date()).format("HH") < 5 ? 0 : 1;
   }
   componentDidMount() {
     var date1 = moment(new Date()).format("YYYY-MM-DDTHH:mm:ss");
     var date2 = moment(new Date()).add(1, 'day').format("YYYY-MM-DDTHH:mm:ss");
-    var url = 'https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-D0047-005?Authorization=CWB-D8B8B83D-A283-465C-97CD-AB69E9FE7A90&locationName=桃園區&timeFrom=' + date1;
+    var url = 'https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-D0047-007?locationName=桃園區&Authorization=CWB-D8B8B83D-A283-465C-97CD-AB69E9FE7A90';
+    url += '&timeFrom=' + date1;
     url += '&timeTo=' + date2;
     this.props.TestActions(url);
   }
@@ -26,8 +47,53 @@ class InitPage extends Component {
     const {state, isLoading, data} = nextProps.TestReducer;
     if(isLoading !== prevState.isLoading) {
       if(state === ActionTypes.TEST_ACTION_SUCCESS) {
+        if(data && data.length !== 0) {
+          var dataList = data.records.locations[0].location[0].weatherElement;
+          var wxValue = '';
+          var wxImg = '';
+          var dataMap = {};
+          dataList.forEach(function(item){
+            dataMap[item.elementName] = item.time[0].elementValue[0].value;
+            if(item.elementName === 'Wx') {
+              wxValue = parseInt(item.time[0].elementValue[1].value, 10);
+            }
+          });
+          if(wxValue === 1) {
+            if(this.currentGreetingTime === 0) {
+              wxImg = require('../../image/ic_moon.png');
+            } else {
+              wxImg = require('../../image/ic_sun.png');
+            }
+          } else if (wxValue === 2 || wxValue === 3) {
+            if(this.currentGreetingTime === 0) {
+              wxImg = require('../../image/ic_cloud_moon.png');
+            } else {
+              wxImg = require('../../image/ic_cloud_sun.png');
+            }
+          } else if (wxValue >= 4 && wxValue <= 7) {
+            wxImg = require('../../image/ic_cloud.png');
+          } else if (wxValue >= 24 && wxValue <= 28) {
+            wxImg = require('../../image/ic_cloud_fog.png');
+          } else if (wxValue >= 8 && wxValue <= 22) {
+            wxImg = require('../../image/ic_cloud_rain.png');
+          } else if (wxValue >= 29 && wxValue <= 39) {
+            wxImg = require('../../image/ic_cloud_rain.png');
+          } else if (wxValue === 41) {
+            wxImg = require('../../image/ic_cloud_rain.png');
+          } 
+          else {
+            wxImg = require('../../image/ic_cloud.png');
+          }
+        }
         return {
           data: data,
+          AT: dataMap['T'],
+          minT: dataMap['MinT'],
+          maxT: dataMap['MaxT'],
+          pop: dataMap['PoP12h'],
+          wx: dataMap['Wx'],
+          rh: dataMap['RH'],
+          wxImage: wxImg,
           isLoading: isLoading
         };
       } else {
@@ -44,7 +110,7 @@ class InitPage extends Component {
     }
  }
 
-  componentDidUpdate(prevProps) {
+  /*componentDidUpdate(prevProps) {
     const {state, isLoading, data} = this.props.TestReducer;
     if(prevProps.isLoading !== isLoading) {
       if(state === ActionTypes.TEST_ACTION_SUCCESS) {
@@ -56,15 +122,16 @@ class InitPage extends Component {
   }
 
   setWeatherData(dataList) {
-   var dataMap = {};
-   dataList.forEach(function(item){
-    console.log(item);
-  });
- }
+    var dataMap = {};
+    dataList.forEach(function(item){
+      dataMap[item.elementName] = item.time[0].elementValue[0].value;
+    });
+    console.log(dataMap);
+    this.setState({ AT: dataMap['T'] });
+  }*/
 
   render() {
-    const { data } = this.state;
-    
+    const { AT, minT, maxT, pop, wx, rh, currentDate, currentDay, wxImage } = this.state;
     return (
       <View style={styles.container}>
         <View style={styles.locView1}>
@@ -82,7 +149,7 @@ class InitPage extends Component {
                   style={styles.imaclock}
                   source={require('../../image/ic_clock.png')}
                 />
-                <Text style={[styles.txt2, { marginTop: 7 }]}>2019/3/2 SAT</Text>
+                <Text style={[styles.txt2, { marginTop: 7 }]}>{currentDate} {currentDay}</Text>
               </View>
             </View>
           </View>
@@ -93,28 +160,33 @@ class InitPage extends Component {
               <View style={styles.imaView}>
                 <Image
                   style={styles.mainIma}
-                  source={require('../../image/ic_cloud_rain_sun.png')}
+                  source={wxImage}
                 />
               </View>
               <View style={styles.txtView1}>
-                <Text style={styles.txt1}>多雲時晴</Text>
-                <View style={{flexDirection: 'row'}}>
+                <Text style={styles.txt1}>{wx}</Text>
+                <View style={{flex: 1, flexDirection: 'row', alignItems: 'flex-end', marginBottom: 16 }}>
                   <Image
-                    style={{ height: 23, width: 23, marginTop: 5 }}
+                    style={{ height: 25, width: 25, marginBottom: 3 }}
                     source={require('../../image/ic_umbrella.png')}
                   />
-                  <Text style={{ fontSize: 23, color: '#FFF', marginLeft: 7}}>100%</Text>
+                  <Text style={{ fontSize: 25, color: '#FFF', marginLeft: 7}}>{pop}%</Text>
                 </View>
-
               </View>
             </View>
             <View style={styles.lineView1} />
               <View style={styles.topRightView}>
-                <Text style={styles.txt4}>體感溫度</Text>
                 <View style={styles.align_items_center}>
-                  <Text style={styles.txt5}>20°c</Text>
+                  <Text style={styles.txt5}>{AT}°c</Text>
                   <View style={styles.txtView2}>
-                    <Text style={styles.txt6}>18°c~22°c</Text>
+                    <Text style={styles.txt6}>{minT}°c~{maxT}°c</Text>
+                  </View>
+                  <View style={{flexDirection: 'row', marginTop: 14}}>
+                    <Image
+                      style={{ height: 23, width: 20, marginTop: 5 }}
+                      source={require('../../image/ic_raindrop.png')}
+                    />
+                    <Text style={{ fontSize: 25, color: '#FFF', marginLeft: 7}}>{rh}%</Text>
                   </View>
                 </View>
               </View>

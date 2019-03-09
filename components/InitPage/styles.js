@@ -53,6 +53,7 @@ module.exports = StyleSheet.create({
       flex: 1,
       alignItems: 'center',
       marginTop: 20,
+      height: 150
     },
     txtView2: {
       borderWidth: 1,
@@ -60,10 +61,12 @@ module.exports = StyleSheet.create({
       borderColor: '#FFF',
       height: 37,
       paddingHorizontal: 10,
-      marginTop: 17 
+      marginTop: 25 
     },
     txt1: {
-      fontSize: 25,
+      fontSize: 20,
+      textAlign: 'center',
+      marginHorizontal: 10,
       color: '#FFF'
     },
     txt2: {
@@ -81,7 +84,7 @@ module.exports = StyleSheet.create({
       marginLeft: 25
     },
     txt5: {
-      fontSize: 70,
+      fontSize: 75,
       color: '#FFF'
     },
     txt6: {
@@ -92,7 +95,7 @@ module.exports = StyleSheet.create({
       marginHorizontal: 15,
       borderRadius: 10,
       backgroundColor: '#48627c',
-      height: 210 
+      height: 245 
     },
     mainIma: {
       height: 90,
