@@ -36,6 +36,16 @@ module.exports = StyleSheet.create({
       height: 17,
       width: 18 
     },
+    imaUmbrella: {
+      height: 25,
+      width: 25,
+      marginBottom: 3
+    },
+    imaRainDrop: {
+      height: 23,
+      width: 20,
+      marginTop: 5 
+    },
     locTxtView: {
       marginLeft: 5,
       justifyContent: 'center'
@@ -108,5 +118,26 @@ module.exports = StyleSheet.create({
     },
     align_items_center: {
       alignItems: 'center'
+    },
+    umbrellaView1: {
+      flex: 1,
+      flexDirection: 'row',
+      alignItems: 'flex-end',
+      marginBottom: 16 
+    },
+    raindropView1: {
+      flexDirection: 'row',
+      marginTop: 14
+    },
+    umbrellaTxt1: {
+      flex: 1,
+      flexDirection: 'row',
+      alignItems: 'flex-end',
+      marginBottom: 16 
+    },
+    raindropTxt1: {
+      fontSize: 25,
+      color: '#FFF',
+      marginLeft: 7
     },
   });

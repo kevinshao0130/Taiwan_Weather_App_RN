@@ -35,6 +35,7 @@ class InitPage extends Component {
     };
     this.currentGreetingTime = moment(new Date()).format("HH") > 17 || moment(new Date()).format("HH") < 5 ? 0 : 1;
   }
+
   componentDidMount() {
     var date1 = moment(new Date()).format("YYYY-MM-DDTHH:mm:ss");
     var date2 = moment(new Date()).add(1, 'day').format("YYYY-MM-DDTHH:mm:ss");
@@ -43,11 +44,13 @@ class InitPage extends Component {
     url += '&timeTo=' + date2;
     this.props.TestActions(url);
   }
+
   static getDerivedStateFromProps(nextProps, prevState){
     const {state, isLoading, data} = nextProps.TestReducer;
     if(isLoading !== prevState.isLoading) {
       if(state === ActionTypes.TEST_ACTION_SUCCESS) {
         if(data && data.length !== 0) {
+          console.log(data);
           var dataList = data.records.locations[0].location[0].weatherElement;
           var wxValue = '';
           var wxImg = '';
@@ -110,26 +113,6 @@ class InitPage extends Component {
     }
  }
 
-  /*componentDidUpdate(prevProps) {
-    const {state, isLoading, data} = this.props.TestReducer;
-    if(prevProps.isLoading !== isLoading) {
-      if(state === ActionTypes.TEST_ACTION_SUCCESS) {
-        if(data && data.length !== 0) {
-          this.setWeatherData(data.records.locations[0].location[0].weatherElement);
-        }
-      }
-    }
-  }
-
-  setWeatherData(dataList) {
-    var dataMap = {};
-    dataList.forEach(function(item){
-      dataMap[item.elementName] = item.time[0].elementValue[0].value;
-    });
-    console.log(dataMap);
-    this.setState({ AT: dataMap['T'] });
-  }*/
-
   render() {
     const { AT, minT, maxT, pop, wx, rh, currentDate, currentDay, wxImage } = this.state;
     return (
@@ -165,12 +148,12 @@ class InitPage extends Component {
               </View>
               <View style={styles.txtView1}>
                 <Text style={styles.txt1}>{wx}</Text>
-                <View style={{flex: 1, flexDirection: 'row', alignItems: 'flex-end', marginBottom: 16 }}>
+                <View style={styles.umbrellaView1}>
                   <Image
-                    style={{ height: 25, width: 25, marginBottom: 3 }}
+                    style={styles.imaUmbrella}
                     source={require('../../image/ic_umbrella.png')}
                   />
-                  <Text style={{ fontSize: 25, color: '#FFF', marginLeft: 7}}>{pop}%</Text>
+                  <Text style={styles.raindropTxt1}>{pop}%</Text>
                 </View>
               </View>
             </View>
@@ -181,12 +164,12 @@ class InitPage extends Component {
                   <View style={styles.txtView2}>
                     <Text style={styles.txt6}>{minT}°c~{maxT}°c</Text>
                   </View>
-                  <View style={{flexDirection: 'row', marginTop: 14}}>
+                  <View style={styles.raindropView1}>
                     <Image
-                      style={{ height: 23, width: 20, marginTop: 5 }}
+                      style={styles.imaRainDrop}
                       source={require('../../image/ic_raindrop.png')}
                     />
-                    <Text style={{ fontSize: 25, color: '#FFF', marginLeft: 7}}>{rh}%</Text>
+                    <Text style={styles.raindropTxt1}>{rh}%</Text>
                   </View>
                 </View>
               </View>
@@ -196,6 +179,7 @@ class InitPage extends Component {
     );
   }
 }
+
 function mapStateToProps(state) {
   return {
     TestReducer: state.TestReducer
