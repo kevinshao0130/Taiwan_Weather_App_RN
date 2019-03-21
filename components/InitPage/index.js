@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import moment from 'moment';
 import styles from './styles';
-import { TestActions } from '../../fetch/TestAction';
+import { getThirtySixDataActions, getEveryThreeHourDataActions } from '../../fetch/Action';
 import { ActionTypes } from '../../constants/Actions';
 
 const days = {
@@ -21,7 +21,6 @@ class InitPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: '',
       minT: '',
       maxT: '',
       AT: '',
@@ -37,23 +36,49 @@ class InitPage extends Component {
   }
 
   componentDidMount() {
-    var date1 = moment(new Date()).format("YYYY-MM-DDTHH:mm:ss");
-    var date2 = moment(new Date()).add(1, 'day').format("YYYY-MM-DDTHH:mm:ss");
-    var url = 'https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-D0047-007?locationName=桃園區&Authorization=CWB-D8B8B83D-A283-465C-97CD-AB69E9FE7A90';
-    url += '&timeFrom=' + date1;
-    url += '&timeTo=' + date2;
-    this.props.TestActions(url);
+    //var date1 = moment(new Date()).format("YYYY-MM-DDTHH:mm:ss");
+    //var date2 = moment(new Date()).add(1, 'day').format("YYYY-MM-DDTHH:mm:ss");
+    var url = 'https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-C0032-001?Authorization=CWB-D8B8B83D-A283-465C-97CD-AB69E9FE7A90&locationName=桃園市';
+    this.props.getThirtySixDataActions(url);
+  }
+
+  componentDidUpdate(prevProps){
+    if ( prevProps.isLoading !== this.props.Reducer.isLoading ) {
+      if(this.props.Reducer.state === ActionTypes.GET_THIRTY_SIX_DATA_ACTION_SUCCESS) {
+        var url = 'https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-D0047-089?locationName=桃園市&Authorization=CWB-D8B8B83D-A283-465C-97CD-AB69E9FE7A90';
+        this.props.getEveryThreeHourDataActions(url);
+      }
+    }
   }
 
   static getDerivedStateFromProps(nextProps, prevState){
-    const {state, isLoading, data} = nextProps.TestReducer;
+    const {state, isLoading, thirtySixData, threeHourData} = nextProps.Reducer;
     if(isLoading !== prevState.isLoading) {
-      if(state === ActionTypes.TEST_ACTION_SUCCESS) {
-        if(data && data.length !== 0) {
-          console.log(data);
-          var dataList = data.records.locations[0].location[0].weatherElement;
+      if(state === ActionTypes.GET_THIRTY_SIX_DATA_ACTION_SUCCESS) {
+        if(thirtySixData && thirtySixData.length !== 0) {
+          console.log(thirtySixData);
+          var dataList = thirtySixData.records.location[0].weatherElement;
           var wxValue = '';
-          var wxImg = '';
+          var dataMap = {};
+          dataList.forEach(function(item){
+            dataMap[item.elementName] = item.time[0].parameter.parameterName;
+            if(item.elementName === 'Wx') {
+              wxValue = parseInt(item.time[0].parameter.parameterValue, 10);
+            }
+          });
+        }
+        return {
+          minT: dataMap['MinT'],
+          maxT: dataMap['MaxT'],
+          pop: dataMap['PoP'],
+          isLoading: isLoading
+        };
+      }
+      if(state === ActionTypes.GET_EVERY_THREE_HOUR_DATA_ACTION_SUCCESS) {
+        if(threeHourData && threeHourData.length !== 0) {
+          console.log(threeHourData);
+          var dataList = threeHourData.records.locations[0].location[0].weatherElement;
+          var wxValue = '';
           var dataMap = {};
           dataList.forEach(function(item){
             dataMap[item.elementName] = item.time[0].elementValue[0].value;
@@ -87,27 +112,23 @@ class InitPage extends Component {
           else {
             wxImg = require('../../image/ic_cloud.png');
           }
+          return {
+            AT: dataMap['AT'],
+            rh: dataMap['RH'],
+            wx: dataMap['Wx'],
+            wxImage: wxImg,
+            isLoading: isLoading
+          };
         }
-        return {
-          data: data,
-          AT: dataMap['T'],
-          minT: dataMap['MinT'],
-          maxT: dataMap['MaxT'],
-          pop: dataMap['PoP12h'],
-          wx: dataMap['Wx'],
-          rh: dataMap['RH'],
-          wxImage: wxImg,
-          isLoading: isLoading
-        };
       } else {
         return {
-          data: '',
+          thirtySixData: '',
           isLoading: isLoading
         };
       }
     } else {
       return {
-        data: '',
+        thirtySixData: '',
         isLoading: false
       };
     }
@@ -182,13 +203,13 @@ class InitPage extends Component {
 
 function mapStateToProps(state) {
   return {
-    TestReducer: state.TestReducer
+    Reducer: state.Reducer
   }
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-      ...bindActionCreators({ TestActions }, dispatch)
+      ...bindActionCreators({ getThirtySixDataActions, getEveryThreeHourDataActions }, dispatch)
   }
 }
 
