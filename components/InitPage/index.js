@@ -17,6 +17,33 @@ const days = {
   '7': 'SUN',
 };
 
+const testData = [
+  {
+    time: '2019-03-29 12:00:00',
+    img: require('../../image/ic_sun.png'),
+    tem: 30,
+    pop: 0,
+  },
+  {
+    time: '2019-03-29 15:00:00',
+    img: require('../../image/ic_cloud.png'),
+    tem: 22,
+    pop: 20,
+  },
+  {
+    time: '2019-03-29 18:00:00',
+    img: require('../../image/ic_cloud_rain.png'),
+    tem: 25,
+    pop: 100,
+  },
+  {
+    time: '2019-03-29 21:00:00',
+    img: require('../../image/ic_cloud_rain.png'),
+    tem: 25,
+    pop: 100,
+  },
+];
+
 class InitPage extends Component {
   constructor(props) {
     super(props);
@@ -132,7 +159,36 @@ class InitPage extends Component {
         isLoading: false
       };
     }
- }
+  }
+
+  renderHourData(data) {
+    let hourData = [];
+    data.forEach((item, index) => {
+      hourData.push(
+        <View style={styles.hourView1} key={index}>
+            <View style={styles.hourView2}>
+              <Text style={styles.hourTxt1}>{moment(item.time).format('HH:mm')}</Text>
+            </View>
+            <View style={styles.cardView2}>
+              <View style={styles.hourView3}>
+                <Image
+                  style={styles.hourImg3}
+                  source={item.img}
+                />
+                <Text style={[styles.raindropTxt1, {marginLeft: 10}]}>{item.pop}%</Text>
+              </View>
+              <View style={styles.lineView2} />
+              <View style={styles.topLeftView}>
+                <View style={styles.hourView4}>
+                  <Text style={styles.hourTxt2}>{item.tem}°c</Text>
+                </View>
+              </View>
+            </View>
+          </View>
+      )
+    })
+    return hourData;
+  }
 
   render() {
     const { AT, minT, maxT, pop, wx, rh, currentDate, currentDay, wxImage } = this.state;
@@ -141,7 +197,7 @@ class InitPage extends Component {
         <View style={styles.locView1}>
           <View style={styles.topView}>
             <Image
-              style={styles.imaloc}
+              style={styles.imgloc}
               source={require('../../image/ic_location.png')}
             />
             <View style={styles.locTxtView}>
@@ -150,7 +206,7 @@ class InitPage extends Component {
             <View style={styles.clockTxtView1}>
               <View style={styles.clockTxtView2}>
                 <Image
-                  style={styles.imaclock}
+                  style={styles.imgclock}
                   source={require('../../image/ic_clock.png')}
                 />
                 <Text style={[styles.txt2, { marginTop: 7 }]}>{currentDate} {currentDay}</Text>
@@ -158,12 +214,12 @@ class InitPage extends Component {
             </View>
           </View>
         </View>
-        <View style={styles.cardView}>
+        <View style={styles.cardView1}>
           <View style={styles.topView}>
             <View style={styles.topLeftView}>
-              <View style={styles.imaView}>
+              <View style={styles.imgView}>
                 <Image
-                  style={styles.mainIma}
+                  style={styles.mainImg}
                   source={wxImage}
                 />
               </View>
@@ -171,7 +227,7 @@ class InitPage extends Component {
                 <Text style={styles.txt1}>{wx}</Text>
                 <View style={styles.umbrellaView1}>
                   <Image
-                    style={styles.imaUmbrella}
+                    style={styles.imgUmbrella}
                     source={require('../../image/ic_umbrella.png')}
                   />
                   <Text style={styles.raindropTxt1}>{pop}%</Text>
@@ -180,6 +236,7 @@ class InitPage extends Component {
             </View>
             <View style={styles.lineView1} />
               <View style={styles.topRightView}>
+                <Text style={styles.txt4}>體感溫度</Text>
                 <View style={styles.align_items_center}>
                   <Text style={styles.txt5}>{AT}°c</Text>
                   <View style={styles.txtView2}>
@@ -187,7 +244,7 @@ class InitPage extends Component {
                   </View>
                   <View style={styles.raindropView1}>
                     <Image
-                      style={styles.imaRainDrop}
+                      style={styles.imgRainDrop}
                       source={require('../../image/ic_raindrop.png')}
                     />
                     <Text style={styles.raindropTxt1}>{rh}%</Text>
@@ -196,6 +253,7 @@ class InitPage extends Component {
               </View>
           </View>
         </View>
+        {this.renderHourData(testData)}
       </View>
     );
   }
