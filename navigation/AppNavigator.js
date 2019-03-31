@@ -4,7 +4,12 @@ import TestPage from '../components/TestPage';
 
 const RootStack = createStackNavigator(
     {
-      InitPage: { screen: InitPage },
+      InitPage: { screen: InitPage,
+        navigationOptions: {
+          headerStyle: {display:"none"},
+          headerLeft: null
+        },
+      },
       TestPage: { screen: TestPage },
     },
     {

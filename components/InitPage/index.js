@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Text, View, TouchableOpacity, Image} from 'react-native';
+import {Text, View, TouchableOpacity, Image, FlatList} from 'react-native';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import moment from 'moment';
@@ -8,41 +8,14 @@ import { getThirtySixDataActions, getEveryThreeHourDataActions } from '../../fet
 import { ActionTypes } from '../../constants/Actions';
 
 const days = {
-  '1': 'MON',
-  '2': 'TUE',
-  '3': 'WED',
-  '4': 'THU',
-  '5': 'FRI',
-  '6': 'SAT',
-  '7': 'SUN',
+  '1': '週一',
+  '2': '週二',
+  '3': '週三',
+  '4': '週四',
+  '5': '週五',
+  '6': '週六',
+  '0': '週日',
 };
-
-const testData = [
-  {
-    time: '2019-03-29 12:00:00',
-    img: require('../../image/ic_sun.png'),
-    tem: 30,
-    pop: 0,
-  },
-  {
-    time: '2019-03-29 15:00:00',
-    img: require('../../image/ic_cloud.png'),
-    tem: 22,
-    pop: 20,
-  },
-  {
-    time: '2019-03-29 18:00:00',
-    img: require('../../image/ic_cloud_rain.png'),
-    tem: 25,
-    pop: 100,
-  },
-  {
-    time: '2019-03-29 21:00:00',
-    img: require('../../image/ic_cloud_rain.png'),
-    tem: 25,
-    pop: 100,
-  },
-];
 
 class InitPage extends Component {
   constructor(props) {
@@ -58,10 +31,23 @@ class InitPage extends Component {
       currentDate: moment(new Date()).format("YYYY/MM/DD"),
       currentDay: days[new Date().getDay()],
       isLoading: false,
+      hourList: []
     };
     this.currentGreetingTime = moment(new Date()).format("HH") > 17 || moment(new Date()).format("HH") < 5 ? 0 : 1;
   }
 
+  navigationOptions = {
+    title: 'some string title',
+    headerTitleStyle: {
+       /*  */
+    },
+    headerStyle: {
+       /*  */
+    },
+    headerTintColor: {
+       /*  */
+    },
+  }
   componentDidMount() {
     //var date1 = moment(new Date()).format("YYYY-MM-DDTHH:mm:ss");
     //var date2 = moment(new Date()).add(1, 'day').format("YYYY-MM-DDTHH:mm:ss");
@@ -70,8 +56,9 @@ class InitPage extends Component {
   }
 
   componentDidUpdate(prevProps){
-    if ( prevProps.isLoading !== this.props.Reducer.isLoading ) {
-      if(this.props.Reducer.state === ActionTypes.GET_THIRTY_SIX_DATA_ACTION_SUCCESS) {
+    const {state, isLoading, thirtySixData, threeHourData} = this.props.Reducer;
+    if ( prevProps.isLoading !== isLoading ) {
+      if(state === ActionTypes.GET_THIRTY_SIX_DATA_ACTION_SUCCESS) {
         var url = 'https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-D0047-089?locationName=桃園市&Authorization=CWB-D8B8B83D-A283-465C-97CD-AB69E9FE7A90';
         this.props.getEveryThreeHourDataActions(url);
       }
@@ -85,7 +72,6 @@ class InitPage extends Component {
         if(thirtySixData && thirtySixData.length !== 0) {
           console.log(thirtySixData);
           var dataList = thirtySixData.records.location[0].weatherElement;
-          var wxValue = '';
           var dataMap = {};
           dataList.forEach(function(item){
             dataMap[item.elementName] = item.time[0].parameter.parameterName;
@@ -105,115 +91,123 @@ class InitPage extends Component {
         if(threeHourData && threeHourData.length !== 0) {
           console.log(threeHourData);
           var dataList = threeHourData.records.locations[0].location[0].weatherElement;
-          var wxValue = '';
-          var dataMap = {};
+          var dataMap = [];
           dataList.forEach(function(item){
-            dataMap[item.elementName] = item.time[0].elementValue[0].value;
+            if(item.elementName === 'T' || item.elementName === 'PoP6h' || item.elementName === 'AT' || item.elementName === 'RH') {
+              dataMap[item.elementName] = item.time;
+            }
             if(item.elementName === 'Wx') {
-              wxValue = parseInt(item.time[0].elementValue[1].value, 10);
+              dataMap[item.elementName] = item.time;
             }
           });
-          if(wxValue === 1) {
-            if(this.currentGreetingTime === 0) {
-              wxImg = require('../../image/ic_moon.png');
-            } else {
-              wxImg = require('../../image/ic_sun.png');
-            }
-          } else if (wxValue === 2 || wxValue === 3) {
-            if(this.currentGreetingTime === 0) {
-              wxImg = require('../../image/ic_cloud_moon.png');
-            } else {
-              wxImg = require('../../image/ic_cloud_sun.png');
-            }
-          } else if (wxValue >= 4 && wxValue <= 7) {
-            wxImg = require('../../image/ic_cloud.png');
-          } else if (wxValue >= 24 && wxValue <= 28) {
-            wxImg = require('../../image/ic_cloud_fog.png');
-          } else if (wxValue >= 8 && wxValue <= 22) {
-            wxImg = require('../../image/ic_cloud_rain.png');
-          } else if (wxValue >= 29 && wxValue <= 39) {
-            wxImg = require('../../image/ic_cloud_rain.png');
-          } else if (wxValue === 41) {
-            wxImg = require('../../image/ic_cloud_rain.png');
-          } 
-          else {
-            wxImg = require('../../image/ic_cloud.png');
+          var timeList = [];
+          for (var i = 0; i < 13; i++) {
+            timeList.push({
+              'time': dataMap['T'][i].dataTime,
+              'T': dataMap['T'][i].elementValue[0].value,
+              'wx': dataMap['Wx'][i].elementValue[1].value,
+              'AT': dataMap['AT'][i].elementValue[0].value,
+              'RH': dataMap['RH'][i].elementValue[0].value,
+              'pop': dataMap['PoP6h'][parseInt(i/2)].elementValue[0].value,
+              wxImg: null
+          })
           }
+          timeList.forEach((item) => {
+            if(item.wx === 1) {
+              if(this.currentGreetingTime === 0) {
+                item.wxImg = require('../../image/ic_moon.png');
+              } else {
+                item.wxImg = require('../../image/ic_sun.png');
+              }
+            } else if (item.wx === 2 || item.wx === 3) {
+              if(this.currentGreetingTime === 0) {
+                item.wxImg = require('../../image/ic_cloud_moon.png');
+              } else {
+                item.wxImg = require('../../image/ic_cloud_sun.png');
+              }
+            } else if (item.wx >= 4 && item.wx <= 7) {
+              item.wxImg = require('../../image/ic_cloud.png');
+            } else if (item.wx >= 24 && item.wx <= 28) {
+              item.wxImg = require('../../image/ic_cloud_fog.png');
+            } else if (item.wx >= 8 && item.wx <= 22) {
+              item.wxImg = require('../../image/ic_cloud_rain.png');
+            } else if (item.wx >= 29 && item.wx <= 39) {
+              item.wxImg = require('../../image/ic_cloud_rain.png');
+            } else if (item.wx === 41) {
+              item.wxImg = require('../../image/ic_cloud_rain.png');
+            } 
+            else {
+              item.wxImg = require('../../image/ic_cloud.png');
+            }
+          });
           return {
-            AT: dataMap['AT'],
-            rh: dataMap['RH'],
-            wx: dataMap['Wx'],
-            wxImage: wxImg,
+            AT: dataMap['AT'][0].elementValue[0].value,
+            rh: dataMap['RH'][0].elementValue[0].value,
+            wx: dataMap['Wx'][0].elementValue[0].value,
+            wxImage: timeList[0].wxImg,
+            hourList: timeList,
             isLoading: isLoading
           };
         }
       } else {
         return {
-          thirtySixData: '',
           isLoading: isLoading
         };
       }
     } else {
       return {
-        thirtySixData: '',
         isLoading: false
       };
     }
   }
 
-  renderHourData(data) {
-    let hourData = [];
-    data.forEach((item, index) => {
-      hourData.push(
-        <View style={styles.hourView1} key={index}>
-            <View style={styles.hourView2}>
-              <Text style={styles.hourTxt1}>{moment(item.time).format('HH:mm')}</Text>
-            </View>
-            <View style={styles.cardView2}>
-              <View style={styles.hourView3}>
-                <Image
-                  style={styles.hourImg3}
-                  source={item.img}
-                />
-                <Text style={[styles.raindropTxt1, {marginLeft: 10}]}>{item.pop}%</Text>
-              </View>
-              <View style={styles.lineView2} />
-              <View style={styles.topLeftView}>
-                <View style={styles.hourView4}>
-                  <Text style={styles.hourTxt2}>{item.tem}°c</Text>
-                </View>
-              </View>
-            </View>
+  renderHourData = (item) => {
+    if (item.index !== 0) {
+      return (
+        <View style={styles.hourView1}>
+          <View style={styles.hourView2}>
+            <Text style={styles.hourTxt1}>{moment(item.item.time).format('HH')}時 {days[moment(item.item.time).day()]}</Text>
           </View>
-      )
-    })
-    return hourData;
-  }
-
-  render() {
-    const { AT, minT, maxT, pop, wx, rh, currentDate, currentDay, wxImage } = this.state;
-    return (
-      <View style={styles.container}>
-        <View style={styles.locView1}>
-          <View style={styles.topView}>
-            <Image
-              style={styles.imgloc}
-              source={require('../../image/ic_location.png')}
-            />
-            <View style={styles.locTxtView}>
-              <Text style={styles.txt2}>桃園市桃園區</Text>
+          <View style={styles.cardView2}>
+            <View style={styles.hourView3}>
+              <Image
+                style={styles.hourImg3}
+                source={item.item.wxImg}
+              />
+              <Text style={[styles.raindropTxt1, {marginLeft: 10}]}>{item.item.pop}%</Text>
             </View>
-            <View style={styles.clockTxtView1}>
-              <View style={styles.clockTxtView2}>
-                <Image
-                  style={styles.imgclock}
-                  source={require('../../image/ic_clock.png')}
-                />
-                <Text style={[styles.txt2, { marginTop: 7 }]}>{currentDate} {currentDay}</Text>
+            <View style={styles.lineView2} />
+            <View style={styles.hourView5}>
+              <View style={styles.hourView4}>
+                <Text style={styles.hourTxt2}>{item.item.T}°c</Text>
               </View>
             </View>
           </View>
         </View>
+      );
+    }
+  }
+
+  _keyExtractor = (item, index) => item.time;
+
+  render() {
+    const { AT, minT, maxT, pop, wx, rh, currentDate, currentDay, wxImage, hourList } = this.state;
+    return (
+      <View style={styles.container}>
+        <View style={styles.navBarView1}>
+          <View style={styles.navBarView2}>
+            <Image
+              style={styles.imgLocation}
+              source={require('../../image/ic_location.png')}
+            />
+            <Text style={styles.txt2}>桃園市桃園區</Text>
+            <Image
+              style={styles.imgTriangleDown}
+              source={require('../../image/ic_triangle_down.png')}
+            />
+          </View>
+        </View>
+        <View style={styles.lineView3}/>
         <View style={styles.cardView1}>
           <View style={styles.topView}>
             <View style={styles.topLeftView}>
@@ -253,7 +247,13 @@ class InitPage extends Component {
               </View>
           </View>
         </View>
-        {this.renderHourData(testData)}
+        <View style={styles.lineView3}/>
+        <FlatList
+          data={hourList}
+          extraData={this.state}
+          keyExtractor={this._keyExtractor}
+          renderItem={this.renderHourData}
+        />
       </View>
     );
   }

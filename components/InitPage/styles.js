@@ -3,10 +3,19 @@ import {StyleSheet, Dimensions} from 'react-native';
 module.exports = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: '#2C3E50',
+      backgroundColor: '#04706b',
     },
     locView1: {
-      height: 30,
+      height: 35,
+    },
+    navBarView1: {
+      height: 56
+    },
+    navBarView2: {
+      flex: 1,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center'
     },
     topView: {
       flex: 1,
@@ -24,17 +33,16 @@ module.exports = StyleSheet.create({
       flex: 1,
       marginTop: 25,
     },
-    imgloc: {
-      marginLeft: 18,
-      height: 16,
-      width: 16,
-      marginTop: 7
+    imgLocation: {
+      height: 22,
+      width: 17,
+      marginTop: 2,
+      marginRight: 10
     },
-    imgclock: {
-      marginRight: 5,
-      marginTop: 6,
-      height: 17,
-      width: 18 
+    imgTriangleDown: {
+      width: 20,
+      height: 14,
+      marginLeft: 10
     },
     imgUmbrella: {
       height: 25,
@@ -42,13 +50,9 @@ module.exports = StyleSheet.create({
       marginBottom: 3
     },
     imgRainDrop: {
-      height: 23,
+      height: 24,
       width: 20,
       marginTop: 5 
-    },
-    locTxtView: {
-      marginLeft: 5,
-      justifyContent: 'center'
     },
     clockTxtView1: {
       flex: 1,
@@ -80,7 +84,7 @@ module.exports = StyleSheet.create({
       color: '#FFF'
     },
     txt2: {
-      fontSize: 13,
+      fontSize: 22,
       color: '#FFF'
     },
     txt3: {
@@ -103,17 +107,18 @@ module.exports = StyleSheet.create({
     },
     cardView1: {
       marginHorizontal: 15,
+      marginVertical: 20,
       borderRadius: 10,
-      backgroundColor: '#48627c',
+      backgroundColor: '#38ada9',
       height: 245 
     },
     cardView2: {
       flex: 3,
       marginRight: 15,
       borderRadius: 10,
-      backgroundColor: '#48627c',
+      backgroundColor: '#38ada9',
       height: 60,
-      marginTop:15,
+      marginVertical:10,
       flexDirection: 'row',
       alignItems: 'center'
     },
@@ -130,6 +135,10 @@ module.exports = StyleSheet.create({
       height: 45,
       backgroundColor: '#FFF',
       width: 2
+    },
+    lineView3: {
+      height: 2,
+      backgroundColor:'#FFF'
     },
     align_items_center: {
       alignItems: 'center'
@@ -160,19 +169,20 @@ module.exports = StyleSheet.create({
       height: 80
     },
     hourView2: {
-      flex: 1,
+      flex: 1.5,
       backgroundColor: '#FFF',
       height: 58,
-      marginTop:16,
-      borderRadius:10,
+      marginVertical: 11,
+      borderRadius: 10,
       marginHorizontal: 15,
-      justifyContent:'center'
+      justifyContent:'center',
+      alignItems: 'center'
     },
     hourView3: {
-      flex: 1,
+      flex: 5,
       flexDirection: 'row',
       alignItems: 'center',
-      marginLeft: 20
+      justifyContent: 'center',
     },
     hourView4: {
       borderWidth: 2,
@@ -180,14 +190,17 @@ module.exports = StyleSheet.create({
       borderColor: '#FFF',
       paddingHorizontal: 10
     },
+    hourView5: {
+      flex: 4,
+      alignItems: 'center'
+    },
     hourImg3: {
       width: 40,
       height: 40
     },
     hourTxt1: {
-      marginLeft: 15,
-      color: '#48627c',
-      fontSize: 25
+      color: '#04706b',
+      fontSize: 23
     },
     hourTxt2: {
       fontSize: 28,
