@@ -36,18 +36,6 @@ class InitPage extends Component {
     this.currentGreetingTime = moment(new Date()).format("HH") > 17 || moment(new Date()).format("HH") < 5 ? 0 : 1;
   }
 
-  navigationOptions = {
-    title: 'some string title',
-    headerTitleStyle: {
-       /*  */
-    },
-    headerStyle: {
-       /*  */
-    },
-    headerTintColor: {
-       /*  */
-    },
-  }
   componentDidMount() {
     //var date1 = moment(new Date()).format("YYYY-MM-DDTHH:mm:ss");
     //var date2 = moment(new Date()).add(1, 'day').format("YYYY-MM-DDTHH:mm:ss");
@@ -101,16 +89,18 @@ class InitPage extends Component {
             }
           });
           var timeList = [];
-          for (var i = 0; i < 13; i++) {
-            timeList.push({
-              'time': dataMap['T'][i].dataTime,
-              'T': dataMap['T'][i].elementValue[0].value,
-              'wx': dataMap['Wx'][i].elementValue[1].value,
-              'AT': dataMap['AT'][i].elementValue[0].value,
-              'RH': dataMap['RH'][i].elementValue[0].value,
-              'pop': dataMap['PoP6h'][parseInt(i/2)].elementValue[0].value,
-              wxImg: null
-          })
+          for (var i = 0; i < 22; i++) {
+            if (moment(new Date()) < moment(dataMap['T'][i].dataTime)) {
+              timeList.push({
+                'time': dataMap['T'][i].dataTime,
+                'T': dataMap['T'][i].elementValue[0].value,
+                'wx': dataMap['Wx'][i].elementValue[1].value,
+                'AT': dataMap['AT'][i].elementValue[0].value,
+                'RH': dataMap['RH'][i].elementValue[0].value,
+                'pop': dataMap['PoP6h'][parseInt(i/2)].elementValue[0].value,
+                wxImg: null
+              })
+            }
           }
           timeList.forEach((item) => {
             if(item.wx === 1) {
@@ -161,8 +151,8 @@ class InitPage extends Component {
     }
   }
 
-  renderHourData = (item) => {
-    if (item.index !== 0) {
+  _renderHourData = (item) => {
+    if (item.index < 11) {
       return (
         <View style={styles.hourView1}>
           <View style={styles.hourView2}>
@@ -252,7 +242,7 @@ class InitPage extends Component {
           data={hourList}
           extraData={this.state}
           keyExtractor={this._keyExtractor}
-          renderItem={this.renderHourData}
+          renderItem={this._renderHourData}
         />
       </View>
     );
