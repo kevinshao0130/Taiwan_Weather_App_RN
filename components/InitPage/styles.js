@@ -1,5 +1,8 @@
 import {StyleSheet, Dimensions} from 'react-native';
 
+const screenWidth = Dimensions.get('window').width;
+const screenHeight = Dimensions.get('window').height;
+
 module.exports = StyleSheet.create({
     container: {
       flex: 1,
@@ -205,5 +208,29 @@ module.exports = StyleSheet.create({
     hourTxt2: {
       fontSize: 28,
       color: '#FFF'
+    },
+    locModalView1: {
+      flex: 1,
+      alignItems: 'center',
+      marginTop: 345
+    },
+    locModalView2: {
+      width: screenWidth - 30,
+      height: screenHeight - 370,
+      backgroundColor: '#FFF',
+      paddingHorizontal: 15,
+      borderRadius: 15
+    },
+    locModalView3: {
+      flex: 1,
+      height: 60,
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderColor: '#000',
+      borderBottomWidth: 1, 
+    },
+    locModalTxt1: {
+      fontSize: 25,
+      color: '#000'
     },
   });

@@ -1,8 +1,9 @@
-import React, {Component} from 'react';
-import {Text, View, TouchableOpacity, Image, FlatList} from 'react-native';
+import React, { Component } from 'react';
+import { Text, View, TouchableOpacity, Image, FlatList, Modal, TouchableWithoutFeedback } from 'react-native';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import moment from 'moment';
+import Spinner from 'react-native-loading-spinner-overlay';
 import styles from './styles';
 import { getThirtySixDataActions, getEveryThreeHourDataActions } from '../../fetch/Action';
 import { ActionTypes } from '../../constants/Actions';
@@ -17,6 +18,31 @@ const days = {
   '0': '週日',
 };
 
+const locations = [
+  { key: 'taipei', value: '臺北市' },
+  { key: 'newtaipei', value: '新北市' },
+  { key: 'keelung', value: '基隆市' },
+  { key: 'taoyuan', value: '桃園市' },
+  { key: 'hsinchu1', value: '新竹縣' },
+  { key: 'hsinchu2', value: '新竹市' },
+  { key: 'miaoli', value: '苗栗縣' },
+  { key: 'taichung', value: '臺中市' },
+  { key: 'changhua', value: '彰化縣' },
+  { key: 'nanyou', value: '南投縣' },
+  { key: 'yunlin', value: '雲林縣' },
+  { key: 'jiayi1', value: '嘉義縣' },
+  { key: 'jiayi2', value: '嘉義市' },
+  { key: 'tainan', value: '臺南市' },
+  { key: 'kaohsiung', value: '高雄市' },
+  { key: 'pingtung', value: '屏東縣' },
+  { key: 'yilan', value: '宜蘭縣' },
+  { key: 'hualian', value: '花蓮縣' },
+  { key: 'taitung', value: '臺東縣' },
+  { key: 'penghu', value: '澎湖縣' },
+  { key: 'kinmen', value: '金門縣' },
+  { key: 'lianjiang', value: '連江縣' },
+];
+
 class InitPage extends Component {
   constructor(props) {
     super(props);
@@ -28,26 +54,26 @@ class InitPage extends Component {
       wx: '',
       rh: '',
       wxImage: require('../../image/ic_cloud.png'),
-      currentDate: moment(new Date()).format("YYYY/MM/DD"),
-      currentDay: days[new Date().getDay()],
       isLoading: false,
-      hourList: []
+      hourList: [],
+      location: locations[3].value,
+      locModalVisible: false,
     };
     this.currentGreetingTime = moment(new Date()).format("HH") > 17 || moment(new Date()).format("HH") < 5 ? 0 : 1;
   }
 
   componentDidMount() {
-    //var date1 = moment(new Date()).format("YYYY-MM-DDTHH:mm:ss");
-    //var date2 = moment(new Date()).add(1, 'day').format("YYYY-MM-DDTHH:mm:ss");
-    var url = 'https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-C0032-001?Authorization=CWB-D8B8B83D-A283-465C-97CD-AB69E9FE7A90&locationName=桃園市';
+    var url = 'https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-C0032-001?Authorization=CWB-D8B8B83D-A283-465C-97CD-AB69E9FE7A90&locationName=';
+    url += this.state.location;
     this.props.getThirtySixDataActions(url);
   }
 
   componentDidUpdate(prevProps){
-    const {state, isLoading, thirtySixData, threeHourData} = this.props.Reducer;
+    const {state, isLoading} = this.props.Reducer;
     if ( prevProps.isLoading !== isLoading ) {
       if(state === ActionTypes.GET_THIRTY_SIX_DATA_ACTION_SUCCESS) {
-        var url = 'https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-D0047-089?locationName=桃園市&Authorization=CWB-D8B8B83D-A283-465C-97CD-AB69E9FE7A90';
+        var url = 'https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-D0047-089?Authorization=CWB-D8B8B83D-A283-465C-97CD-AB69E9FE7A90&locationName=';
+        url += this.state.location;
         this.props.getEveryThreeHourDataActions(url);
       }
     }
@@ -151,6 +177,18 @@ class InitPage extends Component {
     }
   }
 
+  setLocation(loc) {
+    this.setState({ location: loc });
+    this.setState({ locModalVisible: false });
+    var url = 'https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-C0032-001?Authorization=CWB-D8B8B83D-A283-465C-97CD-AB69E9FE7A90&locationName=';
+    url += loc;
+    this.props.getThirtySixDataActions(url);
+  }
+
+  setLocModalVisible(visible) {
+    this.setState({ locModalVisible: visible });
+  }
+
   _renderHourData = (item) => {
     if (item.index < 11) {
       return (
@@ -178,24 +216,61 @@ class InitPage extends Component {
     }
   }
 
-  _keyExtractor = (item, index) => item.time;
+  _renderLocationList = (item) => {
+    return (
+      <TouchableOpacity
+        style={styles.locModalView3}
+        onPress={() => { this.setLocation(item.item.value); }}
+      >
+        <Text style={styles.locModalTxt1}>{item.item.value}</Text>
+      </TouchableOpacity>
+    );
+  }
+
+  _hourKeyExtractor = (item) => item.time;
+
+  _locKeyExtractor = (item) => item.key;
 
   render() {
-    const { AT, minT, maxT, pop, wx, rh, currentDate, currentDay, wxImage, hourList } = this.state;
+    const { AT, minT, maxT, pop, wx, rh, wxImage, hourList, location, locModalVisible, isLoading } = this.state;
     return (
       <View style={styles.container}>
+        <Spinner visible={isLoading}/>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={locModalVisible}
+          onRequestClose={() => { this.setLocModalVisible(false); }}
+        >
+          <TouchableWithoutFeedback onPress={() => { this.setLocModalVisible(false); }}>
+            <View style={{position: 'absolute', top: 0, bottom: 0, left: 0, right: 0}} />
+          </TouchableWithoutFeedback>
+          <View style={styles.locModalView1}>
+            <View style={styles.locModalView2}>
+            <FlatList
+              data={locations}
+              extraData={this.state}
+              keyExtractor={this._locKeyExtractor}
+              renderItem={this._renderLocationList}
+            />
+            </View>
+          </View>
+        </Modal>
         <View style={styles.navBarView1}>
-          <View style={styles.navBarView2}>
+          <TouchableOpacity
+            style={styles.navBarView2}
+            onPress={() => { this.setLocModalVisible(true); }}
+          >
             <Image
               style={styles.imgLocation}
               source={require('../../image/ic_location.png')}
             />
-            <Text style={styles.txt2}>桃園市桃園區</Text>
+            <Text style={styles.txt2}>{location}</Text>
             <Image
               style={styles.imgTriangleDown}
               source={require('../../image/ic_triangle_down.png')}
             />
-          </View>
+          </TouchableOpacity>
         </View>
         <View style={styles.lineView3}/>
         <View style={styles.cardView1}>
@@ -241,7 +316,7 @@ class InitPage extends Component {
         <FlatList
           data={hourList}
           extraData={this.state}
-          keyExtractor={this._keyExtractor}
+          keyExtractor={this._hourKeyExtractor}
           renderItem={this._renderHourData}
         />
       </View>
