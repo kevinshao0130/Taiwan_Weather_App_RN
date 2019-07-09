@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, View, TouchableOpacity, Image, FlatList, Modal, TouchableWithoutFeedback } from 'react-native';
+import { Text, View, TouchableOpacity, Image, FlatList, Modal, TouchableWithoutFeedback, NetInfo, ToastAndroid } from 'react-native';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import moment from 'moment';
@@ -58,14 +58,41 @@ class InitPage extends Component {
       hourList: [],
       location: locations[3].value,
       locModalVisible: false,
+      isConnected: false,
     };
     this.currentGreetingTime = moment(new Date()).format("HH") > 17 || moment(new Date()).format("HH") < 5 ? 0 : 1;
   }
 
   componentDidMount() {
-    var url = 'https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-C0032-001?Authorization=CWB-D8B8B83D-A283-465C-97CD-AB69E9FE7A90&locationName=';
-    url += this.state.location;
-    this.props.getThirtySixDataActions(url);
+    NetInfo.isConnected.addEventListener(
+      'connectionChange',
+       this._handleConnectivityChange.bind(this)
+    );
+    NetInfo.isConnected.fetch().done(
+        (isConnected) => {
+          this.setState({ isConnected });
+          if(isConnected) {
+            var url = 'https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-C0032-001?Authorization=CWB-D8B8B83D-A283-465C-97CD-AB69E9FE7A90&locationName=';
+            url += this.state.location;
+            if(this.state.isConnected) {
+              this.props.getThirtySixDataActions(url);
+            }
+          }
+        }
+    );
+  }
+
+  componentWillUnmount() {
+    NetInfo.isConnected.removeEventListener(
+        'connectionChange',
+        this._handleConnectivityChange.bind(this)
+    );
+  }
+  _handleConnectivityChange(isConnected) {
+    this.setState({ isConnected });
+    if(!isConnected) {
+      ToastAndroid.show(('請檢查網路連線'),ToastAndroid.LONG);
+    }
   }
 
   componentDidUpdate(prevProps){
@@ -182,7 +209,17 @@ class InitPage extends Component {
     this.setState({ locModalVisible: false });
     var url = 'https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-C0032-001?Authorization=CWB-D8B8B83D-A283-465C-97CD-AB69E9FE7A90&locationName=';
     url += loc;
-    this.props.getThirtySixDataActions(url);
+    if(this.state.isConnected) {
+      this.props.getThirtySixDataActions(url);
+    }
+  }
+
+  refreshPage() {
+    var url = 'https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-C0032-001?Authorization=CWB-D8B8B83D-A283-465C-97CD-AB69E9FE7A90&locationName=';
+    url += this.state.location;
+    if(this.state.isConnected) {
+      this.props.getThirtySixDataActions(url);
+    }
   }
 
   setLocModalVisible(visible) {
@@ -257,20 +294,33 @@ class InitPage extends Component {
           </View>
         </Modal>
         <View style={styles.navBarView1}>
-          <TouchableOpacity
-            style={styles.navBarView2}
-            onPress={() => { this.setLocModalVisible(true); }}
-          >
-            <Image
-              style={styles.imgLocation}
-              source={require('../../image/ic_location.png')}
-            />
-            <Text style={styles.txt2}>{location}</Text>
-            <Image
-              style={styles.imgTriangleDown}
-              source={require('../../image/ic_triangle_down.png')}
-            />
-          </TouchableOpacity>
+          <View style={styles.topView}>
+            <View style={styles.topView}/>
+            <View style={styles.topView1}>
+              <TouchableOpacity
+                style={styles.navBarView2}
+                onPress={() => { this.setLocModalVisible(true); }}
+              >
+                <Image
+                  style={styles.imgLocation}
+                  source={require('../../image/ic_location.png')}
+                />
+                <Text style={styles.txt2}>{location}</Text>
+                <Image
+                  style={styles.imgTriangleDown}
+                  source={require('../../image/ic_triangle_down.png')}
+                />
+              </TouchableOpacity>
+            </View>
+            <View style={styles.topView2}>
+              <TouchableOpacity onPress={() => { this.refreshPage(); }}>
+                <Image
+                  style={{ width: 25, height: 25, marginRight: 20 }}
+                  source={require('../../image/ic_refresh.png')}
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
         </View>
         <View style={styles.lineView3}/>
         <View style={styles.cardView1}>

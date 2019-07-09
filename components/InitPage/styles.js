@@ -12,10 +12,9 @@ module.exports = StyleSheet.create({
       height: 35,
     },
     navBarView1: {
-      height: 56
+      height: 56,
     },
     navBarView2: {
-      flex: 1,
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center'
@@ -23,6 +22,16 @@ module.exports = StyleSheet.create({
     topView: {
       flex: 1,
       flexDirection: 'row',
+    },
+    topView1: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center' 
+    },
+    topView2: {
+      flex: 1,
+      alignItems: 'flex-end',
+      justifyContent: 'center'
     },
     topLeftView: {
       flex: 1,

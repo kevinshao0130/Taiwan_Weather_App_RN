@@ -2,13 +2,13 @@ import { ActionTypes } from '../constants/Actions';
 import axios from 'axios';
 
 export function getThirtySixDataActions(url) {
-    return (dispatch) => {
-        dispatch(getThirtySixData())
-        axios.get(url)
-            .then(function (response) {
-                return(dispatch(getThirtySixDataSuccess(response.data)))
-            })
-            .catch(err => dispatch(getThirtySixDataFailure(err)))
+  return (dispatch) => {
+    dispatch(getThirtySixData())
+    axios.get(url)
+      .then(function (response) {
+        return(dispatch(getThirtySixDataSuccess(response.data)))
+      })
+      .catch(error => dispatch(getThirtySixDataFailure(error)))
     }
 }
 
@@ -27,7 +27,7 @@ function getThirtySixDataSuccess(data) {
   }
 }
 
-function getThirtySixDataFailure(err) {
+function getThirtySixDataFailure(error) {
   console.log(ActionTypes.GET_THIRTY_SIX_DATA_ACTION_FAILURE);
   return {
       type: ActionTypes.GET_THIRTY_SIX_DATA_ACTION_FAILURE
@@ -37,12 +37,12 @@ function getThirtySixDataFailure(err) {
 
 export function getEveryThreeHourDataActions(url) {
   return (dispatch) => {
-      dispatch(getEveryThreeHourData())
-      axios.get(url)
-          .then(function (response) {
-              return(dispatch(getEveryThreeHourDataSuccess(response.data)))
-          })
-          .catch(err => dispatch(getEveryThreeHourDataFailure(err)))
+    dispatch(getEveryThreeHourData())
+    axios.get(url)
+      .then(function (response) {
+        return(dispatch(getEveryThreeHourDataSuccess(response.data)))
+       })
+      .catch(error => dispatch(getEveryThreeHourDataFailure(error)))
   }
 }
 
@@ -61,7 +61,7 @@ return {
 }
 }
 
-function getEveryThreeHourDataFailure(err) {
+function getEveryThreeHourDataFailure(error) {
 console.log(ActionTypes.GET_EVERY_THREE_HOUR_DATA_ACTION_FAILURE);
 return {
     type: ActionTypes.GET_EVERY_THREE_HOUR_DATA_ACTION_FAILURE
