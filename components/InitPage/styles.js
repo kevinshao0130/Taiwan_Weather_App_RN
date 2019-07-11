@@ -129,8 +129,8 @@ module.exports = StyleSheet.create({
       marginRight: 15,
       borderRadius: 10,
       backgroundColor: '#38ada9',
-      height: 60,
-      marginVertical:10,
+      height: 50,
+      marginVertical: 10,
       flexDirection: 'row',
       alignItems: 'center'
     },
@@ -144,7 +144,7 @@ module.exports = StyleSheet.create({
       marginVertical: 18
     },
     lineView2: {
-      height: 45,
+      height: 36,
       backgroundColor: '#FFF',
       width: 2
     },
@@ -178,13 +178,13 @@ module.exports = StyleSheet.create({
     },
     hourView1: {
       flexDirection:'row',
-      height: 80
+      height: 67,
     },
     hourView2: {
       flex: 1.5,
       backgroundColor: '#FFF',
-      height: 58,
-      marginVertical: 11,
+      height: 48,
+      marginVertical: 11.5,
       borderRadius: 10,
       marginHorizontal: 15,
       justifyContent:'center',
@@ -197,9 +197,6 @@ module.exports = StyleSheet.create({
       justifyContent: 'center',
     },
     hourView4: {
-      borderWidth: 2,
-      borderRadius: 10,
-      borderColor: '#FFF',
       paddingHorizontal: 10
     },
     hourView5: {
@@ -216,7 +213,8 @@ module.exports = StyleSheet.create({
     },
     hourTxt2: {
       fontSize: 28,
-      color: '#FFF'
+      color: '#FFF',
+      marginBottom: 2
     },
     locModalView1: {
       flex: 1,

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, View, TouchableOpacity, Image, FlatList, Modal, TouchableWithoutFeedback, NetInfo, ToastAndroid } from 'react-native';
+import { Text, View, TouchableOpacity, Image, FlatList, Modal, TouchableWithoutFeedback, NetInfo, ToastAndroid, Dimensions } from 'react-native';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import moment from 'moment';
@@ -8,6 +8,7 @@ import styles from './styles';
 import { getThirtySixDataActions, getEveryThreeHourDataActions } from '../../fetch/Action';
 import { ActionTypes } from '../../constants/Actions';
 
+//https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-D0047-091?Authorization=CWB-D8B8B83D-A283-465C-97CD-AB69E9FE7A90&elementName=PoP12h,MinT,MaxT,Wx&locationName=桃園市
 const days = {
   '1': '週一',
   '2': '週二',
@@ -59,8 +60,10 @@ class InitPage extends Component {
       location: locations[3].value,
       locModalVisible: false,
       isConnected: false,
+      dataState: 1
     };
     this.currentGreetingTime = moment(new Date()).format("HH") > 17 || moment(new Date()).format("HH") < 5 ? 0 : 1;
+    this.setDataState.bind(this)
   }
 
   componentDidMount() {
@@ -71,6 +74,7 @@ class InitPage extends Component {
     NetInfo.isConnected.fetch().done(
         (isConnected) => {
           this.setState({ isConnected });
+          this.setState({ isLoading: false });
           if(isConnected) {
             var url = 'https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-C0032-001?Authorization=CWB-D8B8B83D-A283-465C-97CD-AB69E9FE7A90&locationName=';
             url += this.state.location;
@@ -88,8 +92,10 @@ class InitPage extends Component {
         this._handleConnectivityChange.bind(this)
     );
   }
+
   _handleConnectivityChange(isConnected) {
     this.setState({ isConnected });
+    this.setState({ isLoading: false });
     if(!isConnected) {
       ToastAndroid.show(('請檢查網路連線'),ToastAndroid.LONG);
     }
@@ -197,11 +203,20 @@ class InitPage extends Component {
           isLoading: isLoading
         };
       }
+      if(state === ActionTypes.GET_THIRTY_SIX_DATA_ACTION_FAILURE || state === ActionTypes.GET_EVERY_THREE_HOUR_DATA_ACTION_FAILURE) {
+        return {
+          isLoading: false
+        };
+      }
     } else {
       return {
         isLoading: false
       };
     }
+  }
+
+  setDataState(data) {
+    this.setState({ dataState: data });
   }
 
   setLocation(loc) {
@@ -253,6 +268,33 @@ class InitPage extends Component {
     }
   }
 
+  _renderWeekData = (item) => {
+    if (item.index < 11) {
+      return (
+        <View style={styles.hourView1}>
+          <View style={styles.hourView2}>
+            <Text style={styles.hourTxt1}>{moment(item.item.time).format('HH')}時sss {days[moment(item.item.time).day()]}</Text>
+          </View>
+          <View style={styles.cardView2}>
+            <View style={styles.hourView3}>
+              <Image
+                style={styles.hourImg3}
+                source={item.item.wxImg}
+              />
+              <Text style={[styles.raindropTxt1, {marginLeft: 10}]}>{item.item.pop}%</Text>
+            </View>
+            <View style={styles.lineView2} />
+            <View style={styles.hourView5}>
+              <View style={styles.hourView4}>
+                <Text style={styles.hourTxt2}>{item.item.T}°c</Text>
+              </View>
+            </View>
+          </View>
+        </View>
+      );
+    }
+  }
+
   _renderLocationList = (item) => {
     return (
       <TouchableOpacity
@@ -269,7 +311,7 @@ class InitPage extends Component {
   _locKeyExtractor = (item) => item.key;
 
   render() {
-    const { AT, minT, maxT, pop, wx, rh, wxImage, hourList, location, locModalVisible, isLoading } = this.state;
+    const { AT, minT, maxT, pop, wx, rh, wxImage, hourList, location, locModalVisible, isLoading, dataState } = this.state;
     return (
       <View style={styles.container}>
         <Spinner visible={isLoading}/>
@@ -363,12 +405,37 @@ class InitPage extends Component {
           </View>
         </View>
         <View style={styles.lineView3}/>
-        <FlatList
+        { dataState === 1 ?
+         <FlatList
           data={hourList}
           extraData={this.state}
           keyExtractor={this._hourKeyExtractor}
           renderItem={this._renderHourData}
         />
+          :
+          <FlatList
+            data={hourList}
+            extraData={this.state}
+            keyExtractor={this._hourKeyExtractor}
+            renderItem={this._renderWeekData}
+          />
+        }
+       
+        <View style={styles.lineView3}/>
+        <View style={{ height: 45, flexDirection: 'row' }}>
+          <TouchableOpacity
+              style={{ flex: 1, alignItems: 'center', justifyContent: 'center', borderBottomColor: dataState === 1 ? '#FFF' : '#04706b', borderBottomWidth: 4 }}
+            onPress={() => { this.setDataState(1); }}
+          >
+            <Text style={{ fontSize: 20, color: '#FFF' }}>每3小時</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={{ flex: 1, alignItems: 'center', justifyContent: 'center', borderBottomColor: dataState === 2 ? '#FFF' : '#04706b', borderBottomWidth: 4 }}
+            onPress={() => { this.setDataState(2); }}
+          >
+            <Text style={{ fontSize: 20, color: '#FFF' }}>每週</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     );
   }
