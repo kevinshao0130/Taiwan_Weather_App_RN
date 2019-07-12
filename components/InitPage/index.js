@@ -5,10 +5,13 @@ import { connect } from 'react-redux';
 import moment from 'moment';
 import Spinner from 'react-native-loading-spinner-overlay';
 import styles from './styles';
-import { getThirtySixDataActions, getEveryThreeHourDataActions } from '../../fetch/Action';
+import { getThirtySixDataActions, getEveryThreeHourDataActions, getOneWeekDataActions } from '../../fetch/Action';
 import { ActionTypes } from '../../constants/Actions';
 
-//https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-D0047-091?Authorization=CWB-D8B8B83D-A283-465C-97CD-AB69E9FE7A90&elementName=PoP12h,MinT,MaxT,Wx&locationName=桃園市
+/**************************
+ * FlatList Scroll To Top
+ *****************************/
+
 const days = {
   '1': '週一',
   '2': '週二',
@@ -60,16 +63,17 @@ class InitPage extends Component {
       location: locations[3].value,
       locModalVisible: false,
       isConnected: false,
-      dataState: 1
+      dataState: 1,
+      weekList: []
     };
     this.currentGreetingTime = moment(new Date()).format("HH") > 17 || moment(new Date()).format("HH") < 5 ? 0 : 1;
-    this.setDataState.bind(this)
+    this.setDataState.bind(this);
   }
 
   componentDidMount() {
     NetInfo.isConnected.addEventListener(
       'connectionChange',
-       this._handleConnectivityChange.bind(this)
+      this._handleConnectivityChange.bind(this)
     );
     NetInfo.isConnected.fetch().done(
         (isConnected) => {
@@ -109,11 +113,17 @@ class InitPage extends Component {
         url += this.state.location;
         this.props.getEveryThreeHourDataActions(url);
       }
+      if(state === ActionTypes.GET_EVERY_THREE_HOUR_DATA_ACTION_SUCCESS) {
+        var url = 'https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-D0047-091?Authorization=CWB-D8B8B83D-A283-465C-97CD-AB69E9FE7A90';
+        url += '&elementName=MinT,MaxT,Wx&locationName='
+        url += this.state.location;
+        this.props.getOneWeekDataActions(url);
+      }
     }
   }
 
   static getDerivedStateFromProps(nextProps, prevState){
-    const {state, isLoading, thirtySixData, threeHourData} = nextProps.Reducer;
+    const {state, isLoading, thirtySixData, threeHourData, oneWeekData} = nextProps.Reducer;
     if(isLoading !== prevState.isLoading) {
       if(state === ActionTypes.GET_THIRTY_SIX_DATA_ACTION_SUCCESS) {
         if(thirtySixData && thirtySixData.length !== 0) {
@@ -133,6 +143,61 @@ class InitPage extends Component {
           pop: dataMap['PoP'],
           isLoading: isLoading
         };
+      }
+      if(state === ActionTypes.GET_ONE_WEEK_DATA_ACTION_SUCCESS) {
+        if(oneWeekData && oneWeekData.length !== 0) {
+          console.log(oneWeekData);
+          var dataList = oneWeekData.records.locations[0].location[0].weatherElement;
+          var dataMap = {};
+          dataList.forEach(function(item){
+            dataMap[item.elementName] = item.time;
+          });
+          var timeList = [];
+          for (var i = 0; i < dataMap['MaxT'].length; i++) {
+            if(moment(dataMap['MaxT'][i].startTime).format('DD') === moment(dataMap['MaxT'][i].endTime).format('DD')) {
+              timeList.push({
+                'index': i.toString(),
+                'date': moment(dataMap['MaxT'][i].startTime),
+                'wx': dataMap['Wx'][i].elementValue[1].value,
+                'minT': dataMap['MinT'][i].elementValue[0].value,
+                'maxT': dataMap['MaxT'][i].elementValue[0].value,
+                wxImg: null
+              })
+            }
+          }
+          timeList.forEach((item) => {
+            if(item.wx === 1) {
+              if(this.currentGreetingTime === 0) {
+                item.wxImg = require('../../image/ic_moon.png');
+              } else {
+                item.wxImg = require('../../image/ic_sun.png');
+              }
+            } else if (item.wx === 2 || item.wx === 3) {
+              if(this.currentGreetingTime === 0) {
+                item.wxImg = require('../../image/ic_cloud_moon.png');
+              } else {
+                item.wxImg = require('../../image/ic_cloud_sun.png');
+              }
+            } else if (item.wx >= 4 && item.wx <= 7) {
+              item.wxImg = require('../../image/ic_cloud.png');
+            } else if (item.wx >= 24 && item.wx <= 28) {
+              item.wxImg = require('../../image/ic_cloud_fog.png');
+            } else if (item.wx >= 8 && item.wx <= 22) {
+              item.wxImg = require('../../image/ic_cloud_rain.png');
+            } else if (item.wx >= 29 && item.wx <= 39) {
+              item.wxImg = require('../../image/ic_cloud_rain.png');
+            } else if (item.wx === 41) {
+              item.wxImg = require('../../image/ic_cloud_rain.png');
+            } 
+            else {
+              item.wxImg = require('../../image/ic_cloud.png');
+            }
+          });
+          return {
+            weekList: timeList,
+            isLoading: isLoading
+          };
+        }
       }
       if(state === ActionTypes.GET_EVERY_THREE_HOUR_DATA_ACTION_SUCCESS) {
         if(threeHourData && threeHourData.length !== 0) {
@@ -250,11 +315,15 @@ class InitPage extends Component {
           </View>
           <View style={styles.cardView2}>
             <View style={styles.hourView3}>
-              <Image
-                style={styles.hourImg3}
-                source={item.item.wxImg}
-              />
-              <Text style={[styles.raindropTxt1, {marginLeft: 10}]}>{item.item.pop}%</Text>
+              <View style={styles.topView1}>
+                <Image
+                  style={styles.hourImg3}
+                  source={item.item.wxImg}
+                />
+              </View>
+              <View style={styles.topView1}>
+                <Text style={styles.txt6}>{item.item.pop}%</Text>
+              </View>
             </View>
             <View style={styles.lineView2} />
             <View style={styles.hourView5}>
@@ -269,30 +338,27 @@ class InitPage extends Component {
   }
 
   _renderWeekData = (item) => {
-    if (item.index < 11) {
-      return (
-        <View style={styles.hourView1}>
-          <View style={styles.hourView2}>
-            <Text style={styles.hourTxt1}>{moment(item.item.time).format('HH')}時sss {days[moment(item.item.time).day()]}</Text>
+    return (
+      <View style={styles.hourView1}>
+        <View style={[styles.hourView2, { flex: 1 }]}>
+          <Text style={styles.hourTxt1}>{days[moment(item.item.date).day()]}</Text>
+        </View>
+        <View style={styles.cardView2}>
+          <View style={[styles.hourView3, { flex: 3 }]}>
+            <Image
+              style={styles.hourImg3}
+              source={item.item.wxImg}
+            />
           </View>
-          <View style={styles.cardView2}>
-            <View style={styles.hourView3}>
-              <Image
-                style={styles.hourImg3}
-                source={item.item.wxImg}
-              />
-              <Text style={[styles.raindropTxt1, {marginLeft: 10}]}>{item.item.pop}%</Text>
-            </View>
-            <View style={styles.lineView2} />
-            <View style={styles.hourView5}>
-              <View style={styles.hourView4}>
-                <Text style={styles.hourTxt2}>{item.item.T}°c</Text>
-              </View>
+          <View style={styles.lineView2} />
+          <View style={[styles.hourView5, { flex: 5 }]}>
+            <View style={styles.hourView4}>
+              <Text style={styles.hourTxt2}>{item.item.minT}°c~{item.item.maxT}°c</Text>
             </View>
           </View>
         </View>
-      );
-    }
+      </View>
+    );
   }
 
   _renderLocationList = (item) => {
@@ -308,10 +374,12 @@ class InitPage extends Component {
 
   _hourKeyExtractor = (item) => item.time;
 
+  _weekKeyExtractor = (item) => item.index;
+
   _locKeyExtractor = (item) => item.key;
 
   render() {
-    const { AT, minT, maxT, pop, wx, rh, wxImage, hourList, location, locModalVisible, isLoading, dataState } = this.state;
+    const { AT, minT, maxT, pop, wx, rh, wxImage, hourList, location, locModalVisible, isLoading, dataState, weekList } = this.state;
     return (
       <View style={styles.container}>
         <Spinner visible={isLoading}/>
@@ -322,7 +390,7 @@ class InitPage extends Component {
           onRequestClose={() => { this.setLocModalVisible(false); }}
         >
           <TouchableWithoutFeedback onPress={() => { this.setLocModalVisible(false); }}>
-            <View style={{position: 'absolute', top: 0, bottom: 0, left: 0, right: 0}} />
+            <View style={styles.modalOutside} />
           </TouchableWithoutFeedback>
           <View style={styles.locModalView1}>
             <View style={styles.locModalView2}>
@@ -357,7 +425,7 @@ class InitPage extends Component {
             <View style={styles.topView2}>
               <TouchableOpacity onPress={() => { this.refreshPage(); }}>
                 <Image
-                  style={{ width: 25, height: 25, marginRight: 20 }}
+                  style={styles.refreshImg}
                   source={require('../../image/ic_refresh.png')}
                 />
               </TouchableOpacity>
@@ -406,34 +474,33 @@ class InitPage extends Component {
         </View>
         <View style={styles.lineView3}/>
         { dataState === 1 ?
-         <FlatList
-          data={hourList}
-          extraData={this.state}
-          keyExtractor={this._hourKeyExtractor}
-          renderItem={this._renderHourData}
-        />
-          :
           <FlatList
             data={hourList}
             extraData={this.state}
             keyExtractor={this._hourKeyExtractor}
+            renderItem={this._renderHourData}
+          />
+          :
+          <FlatList
+            data={weekList}
+            extraData={this.state}
+            keyExtractor={this._weekKeyExtractor}
             renderItem={this._renderWeekData}
           />
         }
-       
         <View style={styles.lineView3}/>
-        <View style={{ height: 45, flexDirection: 'row' }}>
+        <View style={styles.bottomView1}>
           <TouchableOpacity
-              style={{ flex: 1, alignItems: 'center', justifyContent: 'center', borderBottomColor: dataState === 1 ? '#FFF' : '#04706b', borderBottomWidth: 4 }}
+            style={[styles.bottomView2, { borderBottomColor: dataState === 1 ? '#FFF' : '#04706b' }]}
             onPress={() => { this.setDataState(1); }}
           >
-            <Text style={{ fontSize: 20, color: '#FFF' }}>每3小時</Text>
+            <Text style={styles.bottomTxt}>每3小時</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={{ flex: 1, alignItems: 'center', justifyContent: 'center', borderBottomColor: dataState === 2 ? '#FFF' : '#04706b', borderBottomWidth: 4 }}
+            style={[styles.bottomView2, { borderBottomColor: dataState === 2 ? '#FFF' : '#04706b' }]}
             onPress={() => { this.setDataState(2); }}
           >
-            <Text style={{ fontSize: 20, color: '#FFF' }}>每週</Text>
+            <Text style={styles.bottomTxt}>每週</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -449,9 +516,8 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-      ...bindActionCreators({ getThirtySixDataActions, getEveryThreeHourDataActions }, dispatch)
+      ...bindActionCreators({ getThirtySixDataActions, getEveryThreeHourDataActions, getOneWeekDataActions }, dispatch)
   }
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(InitPage)
-// this.props.navigation.navigate('TestPage')

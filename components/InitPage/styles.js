@@ -138,6 +138,11 @@ module.exports = StyleSheet.create({
       height: 90,
       width: 90
     },
+    refreshImg: {
+      width: 25,
+      height: 25,
+      marginRight: 20
+    },
     lineView1: {
       backgroundColor: '#FFF',
       width: 2,
@@ -146,7 +151,8 @@ module.exports = StyleSheet.create({
     lineView2: {
       height: 36,
       backgroundColor: '#FFF',
-      width: 2
+      width: 2,
+      marginLeft: 5
     },
     lineView3: {
       height: 2,
@@ -216,6 +222,13 @@ module.exports = StyleSheet.create({
       color: '#FFF',
       marginBottom: 2
     },
+    modalOutside: {
+      position: 'absolute',
+      top: 0,
+      bottom: 0,
+      left: 0,
+      right: 0
+    },
     locModalView1: {
       flex: 1,
       alignItems: 'center',
@@ -240,4 +253,18 @@ module.exports = StyleSheet.create({
       fontSize: 25,
       color: '#000'
     },
+    bottomView1: {
+      height: 45,
+      flexDirection: 'row' 
+    },
+    bottomView2: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderBottomWidth: 3 , 
+    },
+    bottomTxt: {
+      fontSize: 20,
+      color: '#FFF'
+    }
   });

@@ -15,22 +15,22 @@ export function getThirtySixDataActions(url) {
 function getThirtySixData() {
   console.log(ActionTypes.GET_THIRTY_SIX_DATA_ACTION_REQUEST);
   return {
-      type: ActionTypes.GET_THIRTY_SIX_DATA_ACTION_REQUEST
+    type: ActionTypes.GET_THIRTY_SIX_DATA_ACTION_REQUEST
   }
 }
 
 function getThirtySixDataSuccess(data) {
   console.log(ActionTypes.GET_THIRTY_SIX_DATA_ACTION_SUCCESS);
   return {
-      type: ActionTypes.GET_THIRTY_SIX_DATA_ACTION_SUCCESS,
-      data
+    type: ActionTypes.GET_THIRTY_SIX_DATA_ACTION_SUCCESS,
+    data
   }
 }
 
 function getThirtySixDataFailure(error) {
   console.log(ActionTypes.GET_THIRTY_SIX_DATA_ACTION_FAILURE);
   return {
-      type: ActionTypes.GET_THIRTY_SIX_DATA_ACTION_FAILURE
+    type: ActionTypes.GET_THIRTY_SIX_DATA_ACTION_FAILURE
   }
 }
 
@@ -47,23 +47,56 @@ export function getEveryThreeHourDataActions(url) {
 }
 
 function getEveryThreeHourData() {
-console.log(ActionTypes.GET_EVERY_THREE_HOUR_DATA_ACTION_REQUEST);
-return {
+  console.log(ActionTypes.GET_EVERY_THREE_HOUR_DATA_ACTION_REQUEST);
+  return {
     type: ActionTypes.GET_EVERY_THREE_HOUR_DATA_ACTION_REQUEST
-}
+  }
 }
 
 function getEveryThreeHourDataSuccess(data) {
-console.log(ActionTypes.GET_EVERY_THREE_HOUR_DATA_ACTION_SUCCESS);
-return {
+  console.log(ActionTypes.GET_EVERY_THREE_HOUR_DATA_ACTION_SUCCESS);
+  return {
     type: ActionTypes.GET_EVERY_THREE_HOUR_DATA_ACTION_SUCCESS,
     data
-}
+  }
 }
 
 function getEveryThreeHourDataFailure(error) {
-console.log(ActionTypes.GET_EVERY_THREE_HOUR_DATA_ACTION_FAILURE);
-return {
+  console.log(ActionTypes.GET_EVERY_THREE_HOUR_DATA_ACTION_FAILURE);
+  return {
     type: ActionTypes.GET_EVERY_THREE_HOUR_DATA_ACTION_FAILURE
+  }
 }
+
+export function getOneWeekDataActions(url) {
+  return (dispatch) => {
+    dispatch(getOneWeekData())
+    axios.get(url)
+      .then(function (response) {
+        return(dispatch(getOneWeekDataSuccess(response.data)))
+       })
+      .catch(error => dispatch(getOneWeekDataFailure(error)))
+  }
+}
+
+function getOneWeekData() {
+  console.log(ActionTypes.GET_ONE_WEEK_DATA_ACTION_REQUEST);
+  return {
+    type: ActionTypes.GET_ONE_WEEK_DATA_ACTION_REQUEST
+  }
+}
+
+function getOneWeekDataSuccess(data) {
+  console.log(ActionTypes.GET_ONE_WEEK_DATA_ACTION_SUCCESS);
+  return {
+    type: ActionTypes.GET_ONE_WEEK_DATA_ACTION_SUCCESS,
+    data
+  }
+}
+
+function getOneWeekDataFailure(error) {
+  console.log(ActionTypes.GET_ONE_WEEK_DATA_ACTION_FAILURE);
+  return {
+    type: ActionTypes.GET_ONE_WEEK_DATA_ACTION_FAILURE
+  }
 }
