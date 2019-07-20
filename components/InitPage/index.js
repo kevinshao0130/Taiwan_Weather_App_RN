@@ -8,10 +8,6 @@ import styles from './styles';
 import { getThirtySixDataActions, getEveryThreeHourDataActions, getOneWeekDataActions } from '../../fetch/Action';
 import { ActionTypes } from '../../constants/Actions';
 
-/**************************
- * FlatList Scroll To Top
- *****************************/
-
 const days = {
   '1': '週一',
   '2': '週二',
@@ -282,11 +278,14 @@ class InitPage extends Component {
 
   setDataState(data) {
     this.setState({ dataState: data });
+    this.refs.listRef.scrollToOffset({x: 0, y: 0, animated: true})
+    this.refs.listRef.scrollToOffset({x: 0, y: 0, animated: true})
   }
 
   setLocation(loc) {
     this.setState({ location: loc });
     this.setState({ locModalVisible: false });
+    this.refs.listRef.scrollToOffset({x: 0, y: 0, animated: true})
     var url = 'https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-C0032-001?Authorization=CWB-D8B8B83D-A283-465C-97CD-AB69E9FE7A90&locationName=';
     url += loc;
     if(this.state.isConnected) {
@@ -295,6 +294,7 @@ class InitPage extends Component {
   }
 
   refreshPage() {
+    this.refs.listRef.scrollToOffset({x: 0, y: 0, animated: true})
     var url = 'https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-C0032-001?Authorization=CWB-D8B8B83D-A283-465C-97CD-AB69E9FE7A90&locationName=';
     url += this.state.location;
     if(this.state.isConnected) {
@@ -475,6 +475,7 @@ class InitPage extends Component {
         <View style={styles.lineView3}/>
         { dataState === 1 ?
           <FlatList
+            ref="listRef"
             data={hourList}
             extraData={this.state}
             keyExtractor={this._hourKeyExtractor}
@@ -482,6 +483,7 @@ class InitPage extends Component {
           />
           :
           <FlatList
+            ref="listRef"
             data={weekList}
             extraData={this.state}
             keyExtractor={this._weekKeyExtractor}
