@@ -197,7 +197,7 @@ module.exports = StyleSheet.create({
       alignItems: 'center'
     },
     hourView3: {
-      flex: 5,
+      flex: 6,
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center',
@@ -215,7 +215,7 @@ module.exports = StyleSheet.create({
     },
     hourTxt1: {
       color: '#04706b',
-      fontSize: 23
+      fontSize: 20
     },
     hourTxt2: {
       fontSize: 28,
@@ -232,14 +232,17 @@ module.exports = StyleSheet.create({
     locModalView1: {
       flex: 1,
       alignItems: 'center',
-      marginTop: 345
     },
     locModalView2: {
       width: screenWidth - 30,
       height: screenHeight - 370,
-      backgroundColor: '#FFF',
-      paddingHorizontal: 15,
-      borderRadius: 15
+      backgroundColor: '#f7f7f7',
+      paddingHorizontal: 5,
+      borderRadius: 15,
+      borderColor: '#000',
+      borderWidth: 1,
+      position: 'absolute',
+      bottom: 0,
     },
     locModalView3: {
       flex: 1,

@@ -341,7 +341,7 @@ class InitPage extends Component {
     return (
       <View style={styles.hourView1}>
         <View style={[styles.hourView2, { flex: 1 }]}>
-          <Text style={styles.hourTxt1}>{days[moment(item.item.date).day()]}</Text>
+          <Text style={[styles.hourTxt1, { fontSize: 23 }]}>{days[moment(item.item.date).day()]}</Text>
         </View>
         <View style={styles.cardView2}>
           <View style={[styles.hourView3, { flex: 3 }]}>
@@ -351,7 +351,7 @@ class InitPage extends Component {
             />
           </View>
           <View style={styles.lineView2} />
-          <View style={[styles.hourView5, { flex: 5 }]}>
+          <View style={[styles.hourView5, { flex: 6 }]}>
             <View style={styles.hourView4}>
               <Text style={styles.hourTxt2}>{item.item.minT}°c~{item.item.maxT}°c</Text>
             </View>
