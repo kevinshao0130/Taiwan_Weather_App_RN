@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, View, TouchableOpacity, Image, FlatList, Modal, TouchableWithoutFeedback, NetInfo, ToastAndroid, Dimensions } from 'react-native';
+import { Text, View, TouchableOpacity, Image, FlatList, Modal, TouchableWithoutFeedback, NetInfo, ToastAndroid } from 'react-native';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import moment from 'moment';
@@ -128,9 +128,6 @@ class InitPage extends Component {
           var dataMap = {};
           dataList.forEach(function(item){
             dataMap[item.elementName] = item.time[0].parameter.parameterName;
-            if(item.elementName === 'Wx') {
-              wxValue = parseInt(item.time[0].parameter.parameterValue, 10);
-            }
           });
         }
         return {
@@ -154,7 +151,7 @@ class InitPage extends Component {
               timeList.push({
                 'index': i.toString(),
                 'date': moment(dataMap['MaxT'][i].startTime),
-                'wx': dataMap['Wx'][i].elementValue[1].value,
+                'wx': parseInt(dataMap['Wx'][i].elementValue[1].value , 10),
                 'minT': dataMap['MinT'][i].elementValue[0].value,
                 'maxT': dataMap['MaxT'][i].elementValue[0].value,
                 wxImg: null
@@ -209,12 +206,16 @@ class InitPage extends Component {
             }
           });
           var timeList = [];
+          var nowWxValue = 100;
           for (var i = 0; i < 22; i++) {
             if (moment(new Date()) < moment(dataMap['T'][i].dataTime)) {
+              if(i < nowWxValue) {
+                nowWxValue = i;
+              }
               timeList.push({
                 'time': dataMap['T'][i].dataTime,
                 'T': dataMap['T'][i].elementValue[0].value,
-                'wx': dataMap['Wx'][i].elementValue[1].value,
+                'wx': parseInt(dataMap['Wx'][i].elementValue[1].value , 10),
                 'AT': dataMap['AT'][i].elementValue[0].value,
                 'RH': dataMap['RH'][i].elementValue[0].value,
                 'pop': dataMap['PoP6h'][parseInt(i/2)].elementValue[0].value,
@@ -250,11 +251,39 @@ class InitPage extends Component {
               item.wxImg = require('../../image/ic_cloud.png');
             }
           });
+          const nowWx = parseInt(dataMap['Wx'][nowWxValue - 1].elementValue[1].value , 10);
+          var nowWxImg = null;
+          if(nowWx === 1) {
+            if(this.currentGreetingTime === 0) {
+              nowWxImg = require('../../image/ic_moon.png');
+            } else {
+              nowWxImg = require('../../image/ic_sun.png');
+            }
+          } else if (nowWx === 2 || nowWx === 3) {
+            if(this.currentGreetingTime === 0) {
+              nowWxImg = require('../../image/ic_cloud_moon.png');
+            } else {
+              nowWxImg = require('../../image/ic_cloud_sun.png');
+            }
+          } else if (nowWx >= 4 && nowWx <= 7) {
+            nowWxImg = require('../../image/ic_cloud.png');
+          } else if (nowWx>= 24 && nowWx <= 28) {
+            nowWxImg = require('../../image/ic_cloud_fog.png');
+          } else if (nowWx >= 8 && nowWx <= 22) {
+            nowWxImg = require('../../image/ic_cloud_rain.png');
+          } else if (nowWx >= 29 && nowWx <= 39) {
+            nowWxImg = require('../../image/ic_cloud_rain.png');
+          } else if (nowWx === 41) {
+            nowWxImg = require('../../image/ic_cloud_rain.png');
+          } 
+          else {
+            nowWxImg = require('../../image/ic_cloud.png');
+          }
           return {
             AT: dataMap['AT'][0].elementValue[0].value,
             rh: dataMap['RH'][0].elementValue[0].value,
-            wx: dataMap['Wx'][0].elementValue[0].value,
-            wxImage: timeList[0].wxImg,
+            wx: dataMap['Wx'][nowWxValue - 1].elementValue[0].value,
+            wxImage: nowWxImg,
             hourList: timeList,
             isLoading: isLoading
           };
