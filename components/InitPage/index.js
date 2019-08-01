@@ -60,7 +60,8 @@ class InitPage extends Component {
       locModalVisible: false,
       isConnected: false,
       dataState: 1,
-      weekList: []
+      weekList: [],
+      nowTime: moment(new Date()).format("MM/DD HH:mm")
     };
     this.currentGreetingTime = moment(new Date()).format("HH") > 17 || moment(new Date()).format("HH") < 5 ? 0 : 1;
     this.setDataState.bind(this);
@@ -188,7 +189,8 @@ class InitPage extends Component {
           });
           return {
             weekList: timeList,
-            isLoading: isLoading
+            isLoading: isLoading,
+            nowTime: moment(new Date()).format("MM/DD HH:mm")
           };
         }
       }
@@ -408,7 +410,7 @@ class InitPage extends Component {
   _locKeyExtractor = (item) => item.key;
 
   render() {
-    const { AT, minT, maxT, pop, wx, rh, wxImage, hourList, location, locModalVisible, isLoading, dataState, weekList } = this.state;
+    const { AT, minT, maxT, pop, wx, rh, wxImage, hourList, location, locModalVisible, isLoading, dataState, weekList, nowTime } = this.state;
     return (
       <View style={styles.container}>
         <Spinner visible={isLoading}/>
@@ -462,6 +464,9 @@ class InitPage extends Component {
           </View>
         </View>
         <View style={styles.lineView3}/>
+        <View style={styles.timeView}>
+          <Text style={styles.timeTxt}>更新時間 {nowTime}</Text>
+        </View>
         <View style={styles.cardView1}>
           <View style={styles.topView}>
             <View style={styles.topLeftView}>
@@ -521,18 +526,22 @@ class InitPage extends Component {
         }
         <View style={styles.lineView3}/>
         <View style={styles.bottomView1}>
-          <TouchableOpacity
-            style={[styles.bottomView2, { borderBottomColor: dataState === 1 ? '#FFF' : '#04706b' }]}
-            onPress={() => { this.setDataState(1); }}
-          >
-            <Text style={styles.bottomTxt}>每3小時</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.bottomView2, { borderBottomColor: dataState === 2 ? '#FFF' : '#04706b' }]}
-            onPress={() => { this.setDataState(2); }}
-          >
-            <Text style={styles.bottomTxt}>每週</Text>
-          </TouchableOpacity>
+          <View style={[styles.bottomView2]}>
+            <TouchableOpacity
+              style={[styles.bottomView3, { backgroundColor: dataState === 1 ? '#FFF' : '#04706b' }]}
+              onPress={() => { this.setDataState(1); }}
+            >
+              <Text style={[styles.bottomTxt, { color: dataState === 1 ? '#04706b' : '#FFF' }]}>每3小時</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={[styles.bottomView2]}>
+            <TouchableOpacity
+              style={[styles.bottomView3, { backgroundColor: dataState === 2 ? '#FFF' : '#04706b' }]}
+              onPress={() => { this.setDataState(2); }}
+            >
+              <Text style={[styles.bottomTxt, { color: dataState === 2 ? '#04706b' : '#FFF' }]}>每週</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     );

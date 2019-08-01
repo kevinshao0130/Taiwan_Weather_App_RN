@@ -39,7 +39,7 @@ module.exports = StyleSheet.create({
     },
     topRightView: {
       flex: 1,
-      marginTop: 20,
+      marginTop: 16,
     },
     imgView: {
       flex: 1,
@@ -78,8 +78,9 @@ module.exports = StyleSheet.create({
     txtView1: {
       flex: 1,
       alignItems: 'center',
-      marginTop: 20,
-      height: 150
+      marginTop: 5,
+      height: 150,
+      justifyContent: 'center'
     },
     txtView2: {
       borderWidth: 1,
@@ -87,7 +88,7 @@ module.exports = StyleSheet.create({
       borderColor: '#FFF',
       height: 37,
       paddingHorizontal: 10,
-      marginTop: 18
+      marginTop: 5
     },
     txt1: {
       fontSize: 20,
@@ -119,10 +120,10 @@ module.exports = StyleSheet.create({
     },
     cardView1: {
       marginHorizontal: 15,
-      marginVertical: 20,
+      marginBottom: 17,
       borderRadius: 10,
       backgroundColor: '#38ada9',
-      height: 245 
+      height: 220 
     },
     cardView2: {
       flex: 3,
@@ -165,11 +166,11 @@ module.exports = StyleSheet.create({
       flex: 1,
       flexDirection: 'row',
       alignItems: 'flex-end',
-      marginBottom: 16 
+      marginBottom: 15
     },
     raindropView1: {
       flexDirection: 'row',
-      marginTop: 14
+      marginTop: 7
     },
     umbrellaTxt1: {
       flex: 1,
@@ -261,13 +262,27 @@ module.exports = StyleSheet.create({
       flexDirection: 'row' 
     },
     bottomView2: {
+      flex: 1
+    },
+    bottomView3: {
       flex: 1,
       alignItems: 'center',
       justifyContent: 'center',
-      borderBottomWidth: 3 , 
+      marginVertical: 5,
+      marginHorizontal: 15,
+      borderRadius: 7,
     },
     bottomTxt: {
       fontSize: 20,
+      color: '#d1d1d1'
+    },
+    timeView: {
+      marginVertical: 2,
+      alignItems: 'flex-end',
+      marginRight: 20
+    },
+    timeTxt: {
+      fontSize: 13,
       color: '#FFF'
     }
   });
