@@ -251,7 +251,8 @@ module.exports = StyleSheet.create({
       justifyContent: 'center',
       alignItems: 'center',
       borderColor: '#000',
-      borderBottomWidth: 1, 
+      borderBottomWidth: 1,
+      marginHorizontal: 5
     },
     locModalTxt1: {
       fontSize: 25,

@@ -53,7 +53,6 @@ class InitPage extends Component {
       pop: '',
       wx: '',
       rh: '',
-      wxImage: require('../../image/ic_cloud.png'),
       isLoading: false,
       hourList: [],
       location: locations[3].value,
@@ -61,9 +60,9 @@ class InitPage extends Component {
       isConnected: false,
       dataState: 1,
       weekList: [],
-      nowTime: moment(new Date()).format("MM/DD HH:mm")
+      nowTime: moment(new Date()).format("MM/DD HH:mm"),
+      nowWx: null
     };
-    this.currentGreetingTime = moment(new Date()).format("HH") > 17 || moment(new Date()).format("HH") < 5 ? 0 : 1;
     this.setDataState.bind(this);
   }
 
@@ -73,24 +72,24 @@ class InitPage extends Component {
       this._handleConnectivityChange.bind(this)
     );
     NetInfo.isConnected.fetch().done(
-        (isConnected) => {
-          this.setState({ isConnected });
-          this.setState({ isLoading: false });
-          if(isConnected) {
-            var url = 'https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-C0032-001?Authorization=CWB-D8B8B83D-A283-465C-97CD-AB69E9FE7A90&locationName=';
-            url += this.state.location;
-            if(this.state.isConnected) {
-              this.props.getThirtySixDataActions(url);
-            }
+      (isConnected) => {
+        this.setState({ isConnected });
+        this.setState({ isLoading: false });
+        if(isConnected) {
+          var url = 'https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-C0032-001?Authorization=CWB-D8B8B83D-A283-465C-97CD-AB69E9FE7A90&locationName=';
+          url += this.state.location;
+          if(this.state.isConnected) {
+            this.props.getThirtySixDataActions(url);
           }
         }
+      }
     );
   }
 
   componentWillUnmount() {
     NetInfo.isConnected.removeEventListener(
-        'connectionChange',
-        this._handleConnectivityChange.bind(this)
+      'connectionChange',
+      this._handleConnectivityChange.bind(this)
     );
   }
 
@@ -124,7 +123,6 @@ class InitPage extends Component {
     if(isLoading !== prevState.isLoading) {
       if(state === ActionTypes.GET_THIRTY_SIX_DATA_ACTION_SUCCESS) {
         if(thirtySixData && thirtySixData.length !== 0) {
-          console.log(thirtySixData);
           var dataList = thirtySixData.records.location[0].weatherElement;
           var dataMap = {};
           dataList.forEach(function(item){
@@ -140,7 +138,6 @@ class InitPage extends Component {
       }
       if(state === ActionTypes.GET_ONE_WEEK_DATA_ACTION_SUCCESS) {
         if(oneWeekData && oneWeekData.length !== 0) {
-          console.log(oneWeekData);
           var dataList = oneWeekData.records.locations[0].location[0].weatherElement;
           var dataMap = {};
           dataList.forEach(function(item){
@@ -154,39 +151,10 @@ class InitPage extends Component {
                 'date': moment(dataMap['MaxT'][i].startTime),
                 'wx': parseInt(dataMap['Wx'][i].elementValue[1].value , 10),
                 'minT': dataMap['MinT'][i].elementValue[0].value,
-                'maxT': dataMap['MaxT'][i].elementValue[0].value,
-                wxImg: null
+                'maxT': dataMap['MaxT'][i].elementValue[0].value
               })
             }
           }
-          timeList.forEach((item) => {
-            if(item.wx === 1) {
-              if(this.currentGreetingTime === 0) {
-                item.wxImg = require('../../image/ic_moon.png');
-              } else {
-                item.wxImg = require('../../image/ic_sun.png');
-              }
-            } else if (item.wx === 2 || item.wx === 3) {
-              if(this.currentGreetingTime === 0) {
-                item.wxImg = require('../../image/ic_cloud_moon.png');
-              } else {
-                item.wxImg = require('../../image/ic_cloud_sun.png');
-              }
-            } else if (item.wx >= 4 && item.wx <= 7) {
-              item.wxImg = require('../../image/ic_cloud.png');
-            } else if (item.wx >= 24 && item.wx <= 28) {
-              item.wxImg = require('../../image/ic_cloud_fog.png');
-            } else if (item.wx >= 8 && item.wx <= 22) {
-              item.wxImg = require('../../image/ic_cloud_rain.png');
-            } else if (item.wx >= 29 && item.wx <= 39) {
-              item.wxImg = require('../../image/ic_cloud_rain.png');
-            } else if (item.wx === 41) {
-              item.wxImg = require('../../image/ic_cloud_rain.png');
-            } 
-            else {
-              item.wxImg = require('../../image/ic_cloud.png');
-            }
-          });
           return {
             weekList: timeList,
             isLoading: isLoading,
@@ -196,7 +164,6 @@ class InitPage extends Component {
       }
       if(state === ActionTypes.GET_EVERY_THREE_HOUR_DATA_ACTION_SUCCESS) {
         if(threeHourData && threeHourData.length !== 0) {
-          console.log(threeHourData);
           var dataList = threeHourData.records.locations[0].location[0].weatherElement;
           var dataMap = [];
           dataList.forEach(function(item){
@@ -217,75 +184,20 @@ class InitPage extends Component {
               timeList.push({
                 'time': dataMap['T'][i].dataTime,
                 'T': dataMap['T'][i].elementValue[0].value,
-                'wx': parseInt(dataMap['Wx'][i].elementValue[1].value , 10),
+                'wx': parseInt(dataMap['Wx'][i].elementValue[1].value, 10),
                 'AT': dataMap['AT'][i].elementValue[0].value,
                 'RH': dataMap['RH'][i].elementValue[0].value,
                 'pop': dataMap['PoP6h'][parseInt(i/2)].elementValue[0].value,
-                wxImg: null
+                greetingTime: parseInt(moment(dataMap['T'][i].dataTime).format("HH"), 10),
               })
             }
           }
-          timeList.forEach((item) => {
-            if(item.wx === 1) {
-              if(this.currentGreetingTime === 0) {
-                item.wxImg = require('../../image/ic_moon.png');
-              } else {
-                item.wxImg = require('../../image/ic_sun.png');
-              }
-            } else if (item.wx === 2 || item.wx === 3) {
-              if(this.currentGreetingTime === 0) {
-                item.wxImg = require('../../image/ic_cloud_moon.png');
-              } else {
-                item.wxImg = require('../../image/ic_cloud_sun.png');
-              }
-            } else if (item.wx >= 4 && item.wx <= 7) {
-              item.wxImg = require('../../image/ic_cloud.png');
-            } else if (item.wx >= 24 && item.wx <= 28) {
-              item.wxImg = require('../../image/ic_cloud_fog.png');
-            } else if (item.wx >= 8 && item.wx <= 22) {
-              item.wxImg = require('../../image/ic_cloud_rain.png');
-            } else if (item.wx >= 29 && item.wx <= 39) {
-              item.wxImg = require('../../image/ic_cloud_rain.png');
-            } else if (item.wx === 41) {
-              item.wxImg = require('../../image/ic_cloud_rain.png');
-            } 
-            else {
-              item.wxImg = require('../../image/ic_cloud.png');
-            }
-          });
           const nowWx = parseInt(dataMap['Wx'][nowWxValue - 1].elementValue[1].value , 10);
-          var nowWxImg = null;
-          if(nowWx === 1) {
-            if(this.currentGreetingTime === 0) {
-              nowWxImg = require('../../image/ic_moon.png');
-            } else {
-              nowWxImg = require('../../image/ic_sun.png');
-            }
-          } else if (nowWx === 2 || nowWx === 3) {
-            if(this.currentGreetingTime === 0) {
-              nowWxImg = require('../../image/ic_cloud_moon.png');
-            } else {
-              nowWxImg = require('../../image/ic_cloud_sun.png');
-            }
-          } else if (nowWx >= 4 && nowWx <= 7) {
-            nowWxImg = require('../../image/ic_cloud.png');
-          } else if (nowWx>= 24 && nowWx <= 28) {
-            nowWxImg = require('../../image/ic_cloud_fog.png');
-          } else if (nowWx >= 8 && nowWx <= 22) {
-            nowWxImg = require('../../image/ic_cloud_rain.png');
-          } else if (nowWx >= 29 && nowWx <= 39) {
-            nowWxImg = require('../../image/ic_cloud_rain.png');
-          } else if (nowWx === 41) {
-            nowWxImg = require('../../image/ic_cloud_rain.png');
-          } 
-          else {
-            nowWxImg = require('../../image/ic_cloud.png');
-          }
           return {
             AT: dataMap['AT'][0].elementValue[0].value,
             rh: dataMap['RH'][0].elementValue[0].value,
             wx: dataMap['Wx'][nowWxValue - 1].elementValue[0].value,
-            wxImage: nowWxImg,
+            nowWx: nowWx,
             hourList: timeList,
             isLoading: isLoading
           };
@@ -337,6 +249,35 @@ class InitPage extends Component {
     this.setState({ locModalVisible: visible });
   }
 
+  _renderImage(wx, greetingTime) {
+    switch(true) {
+      case (wx === 1) :
+        if(greetingTime > 17 || greetingTime < 5) {
+          return(require('../../image/ic_moon.png'));
+        } else {
+          return(require('../../image/ic_sun.png'));
+        }
+      case (wx === 2 || wx === 3):
+        if(greetingTime > 17 || greetingTime < 5) {
+          return(require('../../image/ic_cloud_moon.png'));
+        } else {
+          return(require('../../image/ic_cloud_sun.png'));
+        }
+      case (wx >= 4 && wx <= 7):
+        return(require('../../image/ic_cloud.png'));
+      case (wx >= 24 && wx <= 28):
+        return(require('../../image/ic_cloud_fog.png'));
+      case (wx >= 8 && wx <= 22):
+        return(require('../../image/ic_cloud_rain.png'));
+      case (wx >= 29 && wx <= 39):
+        return(require('../../image/ic_cloud_rain.png'));
+      case (wx === 41):
+        return(require('../../image/ic_cloud_rain.png'));
+      default:
+        return(require('../../image/ic_cloud.png'));
+    }
+  }
+
   _renderHourData = (item) => {
     if (item.index < 11) {
       return (
@@ -349,7 +290,7 @@ class InitPage extends Component {
               <View style={styles.topView1}>
                 <Image
                   style={styles.hourImg3}
-                  source={item.item.wxImg}
+                  source={this._renderImage(item.item.wx, item.item.greetingTime)}
                 />
               </View>
               <View style={styles.topView1}>
@@ -378,7 +319,7 @@ class InitPage extends Component {
           <View style={[styles.hourView3, { flex: 3 }]}>
             <Image
               style={styles.hourImg3}
-              source={item.item.wxImg}
+              source={this._renderImage(item.item.wx, 12)}
             />
           </View>
           <View style={styles.lineView2} />
@@ -410,7 +351,8 @@ class InitPage extends Component {
   _locKeyExtractor = (item) => item.key;
 
   render() {
-    const { AT, minT, maxT, pop, wx, rh, wxImage, hourList, location, locModalVisible, isLoading, dataState, weekList, nowTime } = this.state;
+    const { AT, minT, maxT, pop, wx, rh, hourList, location, locModalVisible, isLoading, dataState, weekList, nowTime, nowWx } = this.state;
+    const  currentGreetingTime = parseInt(moment(new Date()).format("HH"), 10);
     return (
       <View style={styles.container}>
         <Spinner visible={isLoading}/>
@@ -473,7 +415,7 @@ class InitPage extends Component {
               <View style={styles.imgView}>
                 <Image
                   style={styles.mainImg}
-                  source={wxImage}
+                  source={this._renderImage(nowWx, currentGreetingTime)}
                 />
               </View>
               <View style={styles.txtView1}>
