@@ -192,6 +192,9 @@ class InitPage extends Component {
               })
             }
           }
+          if(!nowWxValue) {
+            nowWxValue = 1;
+          }
           const nowWx = parseInt(dataMap['Wx'][nowWxValue - 1].elementValue[1].value , 10);
           return {
             AT: dataMap['AT'][0].elementValue[0].value,
