@@ -266,7 +266,9 @@ class InitPage extends Component {
         } else {
           return(require('../../image/ic_cloud_sun.png'));
         }
-      case (wx >= 4 && wx <= 7):
+      case (wx === 4):
+          return(require('../../image/ic_cloud_white.png'));
+      case (wx > 4 && wx <= 7):
         return(require('../../image/ic_cloud.png'));
       case (wx >= 24 && wx <= 28):
         return(require('../../image/ic_cloud_fog.png'));
