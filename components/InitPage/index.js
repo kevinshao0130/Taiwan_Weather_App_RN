@@ -8,7 +8,7 @@ import styles from './styles';
 import { getThirtySixDataActions, getEveryThreeHourDataActions, getOneWeekDataActions } from '../../fetch/Action';
 import { ActionTypes } from '../../constants/Actions';
 
-//test commit
+//test commit 2
 const days = {
   '1': '週一',
   '2': '週二',
