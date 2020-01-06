@@ -149,10 +149,10 @@ class InitPage extends Component {
               timeList.push({
                 'index': i.toString(),
                 'date': moment(dataMap['MaxT'][i].startTime),
-                'wx': parseInt(dataMap['Wx'][i].elementValue[1].value , 10),
+                'wx': parseInt(dataMap['Wx'][i].elementValue[1].value, 10),
                 'minT': dataMap['MinT'][i].elementValue[0].value,
                 'maxT': dataMap['MaxT'][i].elementValue[0].value
-              })
+              });
             }
           }
           return {
@@ -167,17 +167,14 @@ class InitPage extends Component {
           var dataList = threeHourData.records.locations[0].location[0].weatherElement;
           var dataMap = [];
           dataList.forEach(function(item){
-            if(item.elementName === 'T' || item.elementName === 'PoP6h' || item.elementName === 'AT' || item.elementName === 'RH') {
-              dataMap[item.elementName] = item.time;
-            }
-            if(item.elementName === 'Wx') {
+            if(item.elementName === 'T' || item.elementName === 'PoP6h' || item.elementName === 'AT' || item.elementName === 'RH' || item.elementName === 'Wx') {
               dataMap[item.elementName] = item.time;
             }
           });
           var timeList = [];
           var nowWxValue = 100;
           for (var i = 0; i < 22; i++) {
-            if (moment(new Date()) < moment(dataMap['T'][i].dataTime)) {
+            if(moment(new Date()) < moment(dataMap['T'][i].dataTime)) {
               if(i < nowWxValue) {
                 nowWxValue = i;
               }
@@ -189,7 +186,7 @@ class InitPage extends Component {
                 'RH': dataMap['RH'][i].elementValue[0].value,
                 'pop': dataMap['PoP6h'][parseInt(i/2)].elementValue[0].value,
                 greetingTime: parseInt(moment(dataMap['T'][i].dataTime).format("HH"), 10),
-              })
+              });
             }
           }
           if(!nowWxValue) {
@@ -284,7 +281,7 @@ class InitPage extends Component {
   }
 
   _renderHourData = (item) => {
-    if (item.index < 11) {
+    if(item.index < 11) {
       return (
         <View style={styles.hourView1}>
           <View style={styles.hourView2}>
