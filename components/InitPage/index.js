@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, View, TouchableOpacity, Image, FlatList, Modal, TouchableWithoutFeedback, NetInfo, ToastAndroid } from 'react-native';
+import { Text, View, TouchableOpacity, Image, FlatList, Modal, TouchableWithoutFeedback, NetInfo } from 'react-native';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import moment from 'moment';
@@ -55,8 +55,10 @@ class InitPage extends Component {
       rh: '',
       isLoading: false,
       hourList: [],
-      location: locations[3].value,
+      location: locations[0].value,
       locModalVisible: false,
+      networkModalVisible: false,
+      errorModalVisible: false,
       isConnected: false,
       dataState: 1,
       weekList: [],
@@ -97,7 +99,9 @@ class InitPage extends Component {
     this.setState({ isConnected });
     this.setState({ isLoading: false });
     if(!isConnected) {
-      ToastAndroid.show(('請檢查網路連線'),ToastAndroid.LONG);
+      this.setNetworkModalVisible(true);
+    } else {
+      this.setNetworkModalVisible(false);
     }
   }
 
@@ -207,9 +211,12 @@ class InitPage extends Component {
           isLoading: isLoading
         };
       }
-      if(state === ActionTypes.GET_THIRTY_SIX_DATA_ACTION_FAILURE || state === ActionTypes.GET_EVERY_THREE_HOUR_DATA_ACTION_FAILURE) {
+      if(state === ActionTypes.GET_THIRTY_SIX_DATA_ACTION_FAILURE
+        || state === ActionTypes.GET_EVERY_THREE_HOUR_DATA_ACTION_FAILURE
+        || state === ActionTypes.GET_ONE_WEEK_DATA_ACTION_FAILURE) {
         return {
-          isLoading: false
+          isLoading: false,
+          errorModalVisible: true
         };
       }
     } else {
@@ -233,6 +240,8 @@ class InitPage extends Component {
     url += loc;
     if(this.state.isConnected) {
       this.props.getThirtySixDataActions(url);
+    } else {
+      this.setNetworkModalVisible(true);
     }
   }
 
@@ -242,11 +251,21 @@ class InitPage extends Component {
     url += this.state.location;
     if(this.state.isConnected) {
       this.props.getThirtySixDataActions(url);
+    } else {
+      this.setNetworkModalVisible(true);
     }
   }
 
   setLocModalVisible(visible) {
     this.setState({ locModalVisible: visible });
+  }
+
+  setNetworkModalVisible(visible) {
+    this.setState({ networkModalVisible: visible });
+  }
+
+  setErrorModalVisible(visible) {
+    this.setState({ errorModalVisible: visible });
   }
 
   _renderImage(wx, greetingTime) {
@@ -353,7 +372,24 @@ class InitPage extends Component {
   _locKeyExtractor = (item) => item.key;
 
   render() {
-    const { AT, minT, maxT, pop, wx, rh, hourList, location, locModalVisible, isLoading, dataState, weekList, nowTime, nowWx } = this.state;
+    const {
+      AT,
+      minT,
+      maxT,
+      pop, 
+      wx,
+      rh,
+      hourList,
+      location,
+      locModalVisible, 
+      isLoading,
+      dataState,
+      weekList,
+      nowTime,
+      nowWx,
+      networkModalVisible, 
+      errorModalVisible
+    } = this.state;
     const  currentGreetingTime = parseInt(moment(new Date()).format("HH"), 10);
     return (
       <View style={styles.container}>
@@ -375,6 +411,39 @@ class InitPage extends Component {
               keyExtractor={this._locKeyExtractor}
               renderItem={this._renderLocationList}
             />
+            </View>
+          </View>
+        </Modal>
+        <Modal
+          transparent={true}
+          visible={networkModalVisible}
+          onRequestClose={() => { this.setNetworkModalVisible(false); }}
+        >
+          <View style={styles.topView1}>
+            <View style={styles.networkModalView1}>
+              <View style={styles.topView1}>
+                <Text style={styles.txt7}>無網路連線</Text>
+              </View>
+            </View>
+          </View>
+        </Modal>
+        <Modal
+          transparent={true}
+          visible={errorModalVisible}
+          onRequestClose={() => { this.setErrorModalVisible(false); }}
+        >
+          <View style={styles.topView1}>
+            <View style={styles.errorModalView1}>
+              <View style={styles.errorModalView2}>
+                <Text style={styles.txt7}>資料獲取發生錯誤</Text>
+              </View>
+              <View style={styles.lineView3}/>
+              <TouchableOpacity
+                style={styles.topView1}
+                onPress={() => { this.setErrorModalVisible(false); }}
+              >
+                <Text style={styles.txt7}>確認</Text>
+              </TouchableOpacity>
             </View>
           </View>
         </Modal>

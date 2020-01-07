@@ -118,6 +118,10 @@ module.exports = StyleSheet.create({
       fontSize: 25,
       color: '#FFF'
     },
+    txt7: {
+      fontSize: 20,
+      color: '#FFF'
+    },
     cardView1: {
       marginHorizontal: 15,
       marginBottom: 17,
@@ -285,5 +289,22 @@ module.exports = StyleSheet.create({
     timeTxt: {
       fontSize: 13,
       color: '#FFF'
+    },
+    networkModalView1: {
+      width: 170,
+      height: 60,
+      backgroundColor: 'rgba(88, 88, 88, 0.9)',
+      borderRadius: 30
+    },
+    errorModalView1: {
+      width: 250,
+      height: 150,
+      backgroundColor: 'rgba(88, 88, 88, 0.9)',
+      borderRadius: 30
+    },
+    errorModalView2: {
+      flex: 2,
+      justifyContent: 'center',
+      alignItems: 'center' 
     }
   });
