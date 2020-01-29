@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, View, TouchableOpacity, Image, FlatList, Modal, TouchableWithoutFeedback, NetInfo } from 'react-native';
+import { Text, View, TouchableOpacity, Image, FlatList, Modal, TouchableWithoutFeedback, NetInfo, StatusBar } from 'react-native';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import moment from 'moment';
@@ -393,6 +393,7 @@ class InitPage extends Component {
     const  currentGreetingTime = parseInt(moment(new Date()).format("HH"), 10);
     return (
       <View style={styles.container}>
+        <StatusBar backgroundColor="#04706b" barStyle="light-content"/>
         <Spinner visible={isLoading}/>
         <Modal
           animationType="slide"
