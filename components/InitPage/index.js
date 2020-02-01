@@ -393,7 +393,7 @@ class InitPage extends Component {
       networkModalVisible, 
       errorModalVisible
     } = this.state;
-    const  currentGreetingTime = parseInt(moment(new Date()).format("HH"), 10);
+    const currentGreetingTime = parseInt(moment(new Date()).format("HH"), 10);
     return (
       <View style={styles.container}>
         <StatusBar backgroundColor="#04706b" barStyle="light-content"/>
@@ -573,7 +573,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-      ...bindActionCreators({ getThirtySixDataActions, getEveryThreeHourDataActions, getOneWeekDataActions }, dispatch)
+    ...bindActionCreators({ getThirtySixDataActions, getEveryThreeHourDataActions, getOneWeekDataActions }, dispatch)
   }
 }
 
