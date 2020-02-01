@@ -159,6 +159,9 @@ class InitPage extends Component {
               });
             }
           }
+          if(moment(timeList[0].date).format('DD') === moment(timeList[1].date).format('DD')) {
+            timeList.shift();
+          }
           return {
             weekList: timeList,
             isLoading: isLoading,

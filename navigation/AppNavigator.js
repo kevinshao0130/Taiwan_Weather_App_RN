@@ -9,8 +9,7 @@ const RootStack = createStackNavigator(
           headerStyle: {display:"none"},
           headerLeft: null
         },
-      },
-      TestPage: { screen: TestPage },
+      }
     },
     {
       initialRouteName: 'InitPage'
