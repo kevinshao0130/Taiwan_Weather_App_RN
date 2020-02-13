@@ -9,7 +9,7 @@ export function getThirtySixDataActions(url) {
         return(dispatch(getThirtySixDataSuccess(response.data)))
       })
       .catch(error => dispatch(getThirtySixDataFailure(error)))
-    }
+  }
 }
 
 function getThirtySixData() {

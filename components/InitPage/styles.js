@@ -7,6 +7,7 @@ module.exports = StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: '#04706b',
+      //backgroundColor: '#000',
     },
     locView1: {
       height: 35,
@@ -79,7 +80,7 @@ module.exports = StyleSheet.create({
       flex: 1,
       alignItems: 'center',
       marginTop: 5,
-      height: 150,
+      height: 100,
       justifyContent: 'center'
     },
     txtView2: {
@@ -127,6 +128,7 @@ module.exports = StyleSheet.create({
       marginBottom: 17,
       borderRadius: 10,
       backgroundColor: '#38ada9',
+      //backgroundColor: '#2e2e2e',
       height: 220 
     },
     cardView2: {
@@ -134,6 +136,7 @@ module.exports = StyleSheet.create({
       marginRight: 15,
       borderRadius: 10,
       backgroundColor: '#38ada9',
+      //backgroundColor: '#2e2e2e',
       height: 50,
       marginVertical: 10,
       flexDirection: 'row',
@@ -160,8 +163,9 @@ module.exports = StyleSheet.create({
       marginLeft: 5
     },
     lineView3: {
-      height: 2,
-      backgroundColor:'#FFF'
+      height: 1,
+      backgroundColor:'#FFF',
+      marginHorizontal: 12,
     },
     align_items_center: {
       alignItems: 'center'
@@ -220,6 +224,7 @@ module.exports = StyleSheet.create({
     },
     hourTxt1: {
       color: '#04706b',
+      //color: '#000',
       fontSize: 20
     },
     hourTxt2: {

@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-import { Text, View, TouchableOpacity, Image, FlatList, Modal, TouchableWithoutFeedback, NetInfo, StatusBar } from 'react-native';
+import { Text, View, TouchableOpacity, Image, FlatList, Modal, TouchableWithoutFeedback, NetInfo, StatusBar, ScrollView, RefreshControl } from 'react-native';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import moment from 'moment';
-import Spinner from 'react-native-loading-spinner-overlay';
 import styles from './styles';
 import { getThirtySixDataActions, getEveryThreeHourDataActions, getOneWeekDataActions } from '../../fetch/Action';
 import { ActionTypes } from '../../constants/Actions';
@@ -368,6 +367,11 @@ class InitPage extends Component {
     );
   }
 
+  _onRefresh = () => {
+    this.setState({ isLoading: true });
+    this.refreshPage();
+  }
+
   _hourKeyExtractor = (item) => item.time;
 
   _weekKeyExtractor = (item) => item.index;
@@ -397,7 +401,6 @@ class InitPage extends Component {
     return (
       <View style={styles.container}>
         <StatusBar backgroundColor="#04706b" barStyle="light-content"/>
-        <Spinner visible={isLoading}/>
         <Modal
           animationType="slide"
           transparent={true}
@@ -470,14 +473,7 @@ class InitPage extends Component {
                 />
               </TouchableOpacity>
             </View>
-            <View style={styles.topView2}>
-              <TouchableOpacity onPress={() => { this.refreshPage(); }}>
-                <Image
-                  style={styles.refreshImg}
-                  source={require('../../image/ic_refresh.png')}
-                />
-              </TouchableOpacity>
-            </View>
+            <View style={styles.topView2}/>
           </View>
         </View>
         <View style={styles.lineView3}/>
@@ -485,43 +481,53 @@ class InitPage extends Component {
           <Text style={styles.timeTxt}>更新時間 {nowTime}</Text>
         </View>
         <View style={styles.cardView1}>
-          <View style={styles.topView}>
-            <View style={styles.topLeftView}>
-              <View style={styles.imgView}>
-                <Image
-                  style={styles.mainImg}
-                  source={this._renderImage(nowWx, currentGreetingTime)}
-                />
-              </View>
-              <View style={styles.txtView1}>
-                <Text style={styles.txt1}>{wx}</Text>
-                <View style={styles.umbrellaView1}>
+          <ScrollView
+          style = {{ height: 220 }}
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={isLoading}
+              onRefresh={this._onRefresh}
+            />
+          }>
+            <View style={styles.topView}>
+              <View style={styles.topLeftView}>
+                <View style={styles.imgView}>
                   <Image
-                    style={styles.imgUmbrella}
-                    source={require('../../image/ic_umbrella.png')}
+                    style={styles.mainImg}
+                    source={this._renderImage(nowWx, currentGreetingTime)}
                   />
-                  <Text style={styles.raindropTxt1}>{pop}%</Text>
                 </View>
-              </View>
-            </View>
-            <View style={styles.lineView1} />
-              <View style={styles.topRightView}>
-                <Text style={styles.txt4}>體感溫度</Text>
-                <View style={styles.align_items_center}>
-                  <Text style={styles.txt5}>{AT}°c</Text>
-                  <View style={styles.txtView2}>
-                    <Text style={styles.txt6}>{minT}°c~{maxT}°c</Text>
-                  </View>
-                  <View style={styles.raindropView1}>
+                <View style={styles.txtView1}>
+                  <Text style={styles.txt1}>{wx}</Text>
+                  <View style={styles.umbrellaView1}>
                     <Image
-                      style={styles.imgRainDrop}
-                      source={require('../../image/ic_raindrop.png')}
+                      style={styles.imgUmbrella}
+                      source={require('../../image/ic_umbrella.png')}
                     />
-                    <Text style={styles.raindropTxt1}>{rh}%</Text>
+                    <Text style={styles.raindropTxt1}>{pop}%</Text>
                   </View>
                 </View>
               </View>
-          </View>
+              <View style={styles.lineView1} />
+                <View style={styles.topRightView}>
+                  <Text style={styles.txt4}>體感溫度</Text>
+                  <View style={styles.align_items_center}>
+                    <Text style={styles.txt5}>{AT}°c</Text>
+                    <View style={styles.txtView2}>
+                      <Text style={styles.txt6}>{minT}°c~{maxT}°c</Text>
+                    </View>
+                    <View style={styles.raindropView1}>
+                      <Image
+                        style={styles.imgRainDrop}
+                        source={require('../../image/ic_raindrop.png')}
+                      />
+                      <Text style={styles.raindropTxt1}>{rh}%</Text>
+                    </View>
+                  </View>
+                </View>
+            </View>
+          </ScrollView>
         </View>
         <View style={styles.lineView3}/>
         { dataState === 1 ?
