@@ -179,7 +179,7 @@ class InitPage extends Component {
           });
           var timeList = [];
           var nowWxValue = 100;
-          for (var i = 0; i < 22; i++) {
+          for (var i = 0; i < 15; i++) {
             if(moment(new Date()) < moment(dataMap['T'][i].dataTime)) {
               if(i < nowWxValue) {
                 nowWxValue = i;
