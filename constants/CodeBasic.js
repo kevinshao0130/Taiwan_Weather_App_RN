@@ -1,10 +1,10 @@
 export const weatherElementName = {
-    Wx: '天氣現象', // Ex.多雲
+    Wx: '天氣現象',
     PoP: '降雨機率12小時分段',
     AT: '體感溫度',
     T: '溫度',
     RH: '相對濕度',
-    CI: '舒適度指數', // Ex.舒適
+    CI: '舒適度指數',
     WeatherDescription: '天氣預報綜合描述',
     PoP6h: '6小時降雨機率',
     Wind: '風向風速',
@@ -17,7 +17,6 @@ export const weatherElementName = {
     MinAT: '最低體感溫度',
     UVI: '紫外線指數'
 }
-// MinCI,MaxAT,MaxCI,MinT,UVI,MinAT,MaxT,Wind,Td,PoP,T,RH,Wx,CI,AT,WeatherDescription
 
 export const weatherImage = {
     ic_sun: '1',
